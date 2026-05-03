@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Hakam JKSNJ</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --h:#1a5c38;--hd:#0d3320;--hl:#2e7d52;--hx:#e8f5ee;
+  --g:#b8892a;--gl:#d4a940;--gx:#fdf6e3;
+  --r:#c0392b;--rx:#fdecea;--b:#1b4f8a;--bx:#e8f0fb;
+  --a:#c07a1a;--ax:#fef3e2;--p:#5c3292;--px:#f0eafa;
+  --bg:#f2ede4;--card:#fff;--txt:#1a1a1a;--muted:#5c5c5c;
+  --border:#cdc4ae;--light:#e0d9cc;
+}
+body{font-family:Georgia,serif;background:var(--bg);color:var(--txt)}
+#login-screen{min-height:100vh;background:linear-gradient(160deg,var(--hd),var(--hl));display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#fff;border-radius:16px;padding:36px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .icon{font-size:44px;margin-bottom:10px}
+.login-logo .agency{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.login-logo .title{font-size:20px;font-weight:800;color:var(--hd)}
+.login-logo .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.field-wrap{margin-bottom:14px}
+.field-wrap label{display:block;font-size:11px;font-weight:700;color:var(--h);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.field-wrap input,.field-wrap select,.field-wrap textarea{width:100%;padding:9px 11px;border-radius:8px;border:1.5px solid var(--border);font-size:13px;background:#fff;color:var(--txt);font-family:inherit}
+.field-wrap textarea{resize:vertical;min-height:72px}
+.field-wrap input:focus,.field-wrap select:focus,.field-wrap textarea:focus{outline:none;border-color:var(--h);box-shadow:0 0 0 3px rgba(26,92,56,.12)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field-row.tri{grid-template-columns:1fr 1fr 1fr}
+.field-row.full{grid-template-columns:1fr}
+.err-box{background:var(--rx);border:1px solid #f5a0a0;border-radius:7px;padding:9px 12px;font-size:12px;color:var(--r);margin-bottom:12px}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;font-family:inherit;transition:opacity .15s}
+.btn:hover{opacity:.85}.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn-primary{background:var(--h);color:#fff}
+.btn-outline{background:transparent;color:var(--h);border:1.5px solid var(--h)}
+.btn-gold{background:var(--g);color:#fff}
+.btn-danger{background:var(--r);color:#fff}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-sm{padding:5px 11px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+#app{display:flex;height:100vh;overflow:hidden}
+#sidebar{width:220px;min-width:220px;background:var(--hd);display:flex;flex-direction:column}
+.sidebar-logo{padding:18px 16px;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar-logo .s-icon{font-size:26px;margin-bottom:6px}
+.sidebar-logo .s-title{color:#fff;font-size:13px;font-weight:700;line-height:1.4}
+.sidebar-logo .s-sub{color:rgba(255,255,255,.45);font-size:10px;margin-top:3px}
+#sidebar nav{flex:1;padding:10px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;cursor:pointer;color:rgba(255,255,255,.65);font-size:13px;transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.1);color:#fff;border-left-color:var(--gl)}
+.nav-item .ni{font-size:16px}
+.sidebar-footer{padding:12px 16px;border-top:1px solid rgba(255,255,255,.1)}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--hl);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#topbar{background:#fff;border-bottom:.5px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#topbar .tb-title{font-size:15px;font-weight:700;color:var(--hd)}
+#topbar .tb-bread{font-size:11px;color:var(--muted)}
+#content{flex:1;overflow-y:auto;padding:20px}
+.card{background:#fff;border:.5px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:700;color:var(--hd);margin-bottom:12px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:#fff;border:.5px solid var(--border);border-radius:10px;padding:16px;border-top:3px solid}
+.stat-card .sv{font-size:28px;font-weight:800;line-height:1.2;margin:6px 0 4px}
+.stat-card .sl{font-size:11px;color:var(--muted);font-weight:500}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.badge::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7}
+.b-aktif{background:var(--hx);color:var(--hl)}.b-tangguh{background:var(--ax);color:var(--a)}
+.b-selesai{background:var(--bx);color:var(--b)}.b-draf{background:var(--light);color:var(--muted)}
+.b-lengkap{background:var(--hx);color:var(--hl)}.b-talaq{background:var(--rx);color:var(--r)}
+.b-khul{background:var(--px);color:var(--p)}.b-damai{background:var(--hx);color:var(--hl)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:9px 12px;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:10px 12px;border-bottom:.5px solid var(--border);vertical-align:middle}
+tr:hover td{background:#fafaf8}
+.sec-hdr{font-size:11px;font-weight:700;color:var(--hd);padding:7px 10px;background:var(--hx);border-radius:5px;margin:14px 0 8px;border-left:3px solid var(--h);text-transform:uppercase;letter-spacing:.5px}
+.note{padding:10px 14px;border-radius:7px;font-size:12px;margin-bottom:12px;line-height:1.6}
+.note-h{background:var(--hx);border:1px solid #a8d5b8;color:#0d4024}
+.note-r{background:var(--rx);border:1px solid #f5b0a0;color:#7a1010}
+.note-a{background:var(--ax);border:1px solid #f0c070;color:#7a4a00}
+.note-g{background:var(--gx);border:1px solid var(--gl);color:#6b4a00}
+.note-p{background:var(--px);border:1px solid #c9b0e8;color:#3c1a60}
+.akuan{background:var(--px);border:1px solid #c9b0e8;border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.akuan-title{font-size:11px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.akuan-text{font-size:12px;color:#3c1a60;line-height:1.7;font-style:italic}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal{background:#fff;border-radius:12px;width:100%;max-width:700px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-hdr{background:var(--hd);padding:16px 20px;color:#fff;flex-shrink:0}
+.modal-hdr h2{font-size:16px;font-weight:800}
+.modal-hdr p{font-size:11px;opacity:.65;margin-top:2px}
+.modal-body{flex:1;overflow-y:auto;padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;background:#f8f8f6;flex-shrink:0}
+.search-bar{display:flex;gap:10px;margin-bottom:14px}
+.search-bar input{flex:1;padding:8px 12px;border-radius:8px;border:1.5px solid var(--border);font-size:13px}
+.filter-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.ftab{padding:5px 14px;border-radius:20px;border:none;background:#fff;font-size:12px;font-weight:600;cursor:pointer;color:var(--muted);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.ftab.active{background:var(--h);color:#fff}
+.borang-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.borang-card{background:#fff;border:.5px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;border-left:4px solid;transition:all .15s}
+.borang-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.kes-header{background:var(--hd);border-radius:12px;padding:20px;color:#fff;margin-bottom:16px}
+.prosedur-step{display:flex;gap:14px;margin-bottom:14px}
+.step-circle{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;border:2px solid}
+.step-body{flex:1;background:#fff;border:.5px solid var(--border);border-radius:10px;padding:13px 16px}
+.acc-item{border:.5px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.acc-hdr{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;cursor:pointer;background:#fff;border-left:4px solid}
+.acc-hdr:hover{background:var(--bg)}
+.acc-body{padding:12px 16px 14px;background:var(--bg);border-top:.5px solid var(--border);display:none}
+.acc-body.open{display:block}
+.acc-dot{width:6px;height:6px;border-radius:50%;margin-top:7px;flex-shrink:0}
+.dash-grid{display:grid;grid-template-columns:1.6fr 1fr;gap:16px}
+.link{color:var(--h);font-weight:700;cursor:pointer;text-decoration:underline}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.success-wrap{text-align:center;padding:50px 20px}
+.success-icon{width:70px;height:70px;border-radius:50%;background:var(--hx);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 16px}
+.kes-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.detail-row:last-child{border-bottom:none}
+.detail-lbl{color:var(--muted)}
+.detail-val{font-weight:700;text-align:right;max-width:55%}
+.borang-list-subs{margin-top:20px}
+.tempoh-card{background:var(--hx);border:1px solid var(--hl);border-radius:10px;padding:14px;margin-bottom:12px}
+.lap-card{background:#fff;border:.5px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;border-left:4px solid}
+.login-demo{margin-top:20px;padding:14px;background:var(--bg);border-radius:8px}
+.login-demo .demo-title{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.demo-row{font-size:12px;color:var(--muted);display:flex;gap:8px;margin-bottom:4px;cursor:pointer;align-items:center}
+.demo-row:hover{color:var(--h)}
+.demo-id{color:var(--h);font-weight:700}
+@media print{
+  #sidebar,#topbar,.no-print{display:none!important}
+  #main{display:block}
+  #content{overflow:visible;padding:0}
+  .modal-overlay{position:static;background:none;padding:0}
+  .modal{max-height:none;box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="icon">⚖️</div>
+      <div class="agency">Jabatan Kehakiman Syariah Negeri Johor</div>
+      <div class="title">Portal Hakam JKSNJ</div>
+      <div class="sub">Kaedah-Kaedah Hakam (Negeri Johor) 2022</div>
+    </div>
+    <div class="field-wrap">
+      <label>ID Pengguna</label>
+      <input type="text" id="inp-id" placeholder="Masukkan ID pengguna">
+    </div>
+    <div class="field-wrap">
+      <label>Kata Laluan</label>
+      <input type="password" id="inp-kata" placeholder="Masukkan kata laluan" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="login-err" class="err-box" style="display:none"></div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()" id="login-btn">🔐 Log Masuk</button>
+    <div class="login-demo">
+      <div class="demo-title">Akaun Ujian (klik untuk isi):</div>
+      <div class="demo-row" onclick="fillLogin('admin','jksnj2025')"><span class="demo-id">admin</span> / jksnj2025 <span style="margin-left:auto;color:var(--h);font-size:11px">Pentadbir</span></div>
+      <div class="demo-row" onclick="fillLogin('daftar','daftar123')"><span class="demo-id">daftar</span> / daftar123 <span style="margin-left:auto;color:var(--b);font-size:11px">Pendaftar</span></div>
+      <div class="demo-row" onclick="fillLogin('hakam1','hakam123')"><span class="demo-id">hakam1</span> / hakam123 <span style="margin-left:auto;color:var(--g);font-size:11px">Hakam</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <div id="sidebar">
+    <div class="sidebar-logo">
+      <div class="s-icon">⚖️</div>
+      <div class="s-title">Portal Hakam JKSNJ</div>
+      <div class="s-sub">Jabatan Kehakiman Syariah<br>Negeri Johor</div>
+    </div>
+    <nav>
+      <div class="nav-item active" data-v="dashboard"><span class="ni">◼</span> Papan Pemuka</div>
+      <div class="nav-item" data-v="kes"><span class="ni">📁</span> Rekod Kes</div>
+      <div class="nav-item" data-v="laporan"><span class="ni">📄</span> Laporan Tahkim</div>
+      <div class="nav-item" data-v="borang"><span class="ni">📋</span> Borang 1–9</div>
+      <div class="nav-item" data-v="prosedur"><span class="ni">🗺</span> Aliran Prosedur</div>
+      <div class="nav-item" data-v="etika"><span class="ni">📖</span> Etika &amp; Kaedah</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div class="avatar" id="user-avatar">A</div>
+        <div>
+          <div style="color:rgba(255,255,255,.85);font-size:12px;font-weight:600" id="user-name">Admin</div>
+          <div style="color:rgba(255,255,255,.45);font-size:10px" id="user-role">Pentadbir</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost btn-full btn-sm" onclick="doLogout()" style="color:rgba(255,255,255,.7);border-color:rgba(255,255,255,.2)">Log Keluar</button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="topbar">
+      <div>
+        <div class="tb-title" id="pg-title">Papan Pemuka</div>
+        <div class="tb-bread" id="pg-bread">Portal Hakam JKSNJ › Papan Pemuka</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-size:12px;color:var(--muted)" id="today-date"></div>
+        <span class="tag" style="background:var(--hx);color:var(--h);font-size:11px" id="role-tag">ADMIN</span>
+      </div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+
+<script>
+// ── DATA & STATE ──────────────────────────────────────────
+let STATE={user:null,kes:[],laporan:[],subs:[],view:'dashboard',kesDetail:null,borangKes:null,borangId:null};
+
+async function load(){
+  const [k,l,s]=await Promise.all([
+    fetch('/api/kes').then(r=>r.json()).catch(()=>[]),
+    fetch('/api/laporan').then(r=>r.json()).catch(()=>[]),
+    fetch('/api/borang').then(r=>r.json()).catch(()=>[])
+  ]);
+  STATE.kes=Array.isArray(k)?k:[];
+  STATE.laporan=Array.isArray(l)?l:[];
+  STATE.subs=Array.isArray(s)?s:[];
+}
+
+// ── LOGIN ────────────────────────────────────────────────
+function fillLogin(id,kata){document.getElementById('inp-id').value=id;document.getElementById('inp-kata').value=kata}
+async function doLogin(){
+  const id=document.getElementById('inp-id').value.trim();
+  const kata=document.getElementById('inp-kata').value.trim();
+  const btn=document.getElementById('login-btn');
+  const err=document.getElementById('login-err');
+  btn.disabled=true;err.style.display='none';
+  try{
+    const res=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,kata})});
+    const data=await res.json();
+    if(!res.ok){err.style.display='block';err.textContent=data.error;return}
+    await initApp(data.user);
+  }catch{
+    err.style.display='block';err.textContent='Ralat sambungan. Pastikan pelayan berjalan di localhost:3000.';
+  }finally{btn.disabled=false}
+}
+async function doLogout(){
+  await fetch('/api/auth/logout',{method:'POST'});
+  STATE.user=null;STATE.view='dashboard';STATE.kesDetail=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('login-err').style.display='none';
+  document.getElementById('inp-id').value='';document.getElementById('inp-kata').value='';
+}
+async function initApp(u){
+  STATE.user=u;await load();
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('user-avatar').textContent=u.nama.charAt(0);
+  document.getElementById('user-name').textContent=u.nama.split(' ').slice(0,2).join(' ');
+  document.getElementById('user-role').textContent=u.jawatan;
+  document.getElementById('role-tag').textContent=u.peranan.toUpperCase();
+  document.getElementById('today-date').textContent=new Date().toLocaleDateString('ms-MY',{weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+  document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>navigate(n.dataset.v)));
+  navigate('dashboard');
+}
+
+// ── NAVIGATE ─────────────────────────────────────────────
+const TITLES={dashboard:'Papan Pemuka',kes:'Rekod Kes Hakam',laporan:'Laporan Majlis Tahkim',borang:'Borang Rasmi (Jadual Pertama)',prosedur:'Aliran Prosedur Hakam',etika:'Etika & Kaedah Hakam'};
+function navigate(v,payload){
+  STATE.view=v;STATE.kesDetail=null;STATE.borangKes=null;
+  if(v==='kes-detail'){STATE.kesDetail=payload;STATE.view='kes'}
+  document.querySelectorAll('.nav-item').forEach(n=>{n.classList.toggle('active',n.dataset.v===v)});
+  const t=v==='kes-detail'?`Kes ${payload.id}`:(TITLES[v]||v);
+  document.getElementById('pg-title').textContent=t;
+  document.getElementById('pg-bread').textContent=`Portal Hakam JKSNJ › ${t}`;
+  render();
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function render(){
+  const c=document.getElementById('content');
+  const v=STATE.view;
+  if(v==='dashboard') c.innerHTML=renderDash();
+  else if(v==='kes'&&!STATE.kesDetail) c.innerHTML=renderKes();
+  else if(v==='kes'&&STATE.kesDetail) c.innerHTML=renderKesDetail(STATE.kesDetail);
+  else if(v==='laporan') c.innerHTML=renderLaporan();
+  else if(v==='borang') c.innerHTML=renderBorang();
+  else if(v==='prosedur') c.innerHTML=renderProsedur();
+  else if(v==='etika') c.innerHTML=renderEtika();
+  bindEvents();
+}
+
+function badge(s){const m={Aktif:'aktif',Tangguh:'tangguh',Selesai:'selesai',Draf:'draf',Lengkap:'lengkap',Talaq:'talaq',"Khul'":'khul',Damai:'damai'};return`<span class="badge b-${m[s]||'draf'}">${s}</span>`}
+function fmtDate(d){return d?new Date(d).toLocaleDateString('ms-MY',{day:'2-digit',month:'short',year:'numeric'}):'-'}
+
+// ── DASHBOARD ────────────────────────────────────────────
+function renderDash(){
+  const k=STATE.kes;const l=STATE.laporan;
+  const aktif=k.filter(x=>x.status==='Aktif').length;
+  const selesai=k.filter(x=>x.status==='Selesai').length;
+  const draf=l.filter(x=>x.status==='Draf').length;
+  const ht=k.filter(x=>{if(x.status!=='Aktif')return false;const d=Math.ceil((new Date(x.tarikhTamat)-new Date())/86400000);return d>=0&&d<=14});
+  return`
+  <div class="stat-grid">
+    <div class="stat-card" style="border-top-color:var(--h)"><div style="font-size:20px">📁</div><div class="sv" style="color:var(--h)">${k.length}</div><div class="sl">Jumlah Kes</div></div>
+    <div class="stat-card" style="border-top-color:var(--a)"><div style="font-size:20px">⚡</div><div class="sv" style="color:var(--a)">${aktif}</div><div class="sl">Kes Aktif</div></div>
+    <div class="stat-card" style="border-top-color:var(--b)"><div style="font-size:20px">✅</div><div class="sv" style="color:var(--b)">${selesai}</div><div class="sl">Kes Selesai</div></div>
+    <div class="stat-card" style="border-top-color:var(--g)"><div style="font-size:20px">📄</div><div class="sv" style="color:var(--g)">${draf}</div><div class="sl">Laporan Draf</div></div>
+  </div>
+  <div class="dash-grid">
+    <div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="card-title" style="margin:0">Kes Terkini</div>
+          <span class="link" style="font-size:12px" onclick="navigate('kes')">Lihat semua →</span>
+        </div>
+        <table><thead><tr><th>No. Kes</th><th>Suami</th><th>Mahkamah</th><th>Status</th></tr></thead><tbody>
+        ${k.slice(0,5).map(x=>`<tr><td><span class="link" onclick="navigate('kes-detail',KES('${x.id}'))">${x.id}</span></td><td style="font-size:12px">${x.suami}</td><td style="font-size:11px;color:var(--muted)">${x.mahkamah.replace('Mahkamah Rendah Syariah ','MRS ')}</td><td>${badge(x.status)}</td></tr>`).join('')}
+        </tbody></table>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="card-title" style="margin:0">Laporan Majlis Tahkim Terkini</div>
+          <span class="link" style="font-size:12px" onclick="navigate('laporan')">Lihat semua →</span>
+        </div>
+        ${l.slice(0,3).map(x=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:.5px solid var(--border)"><div><div style="font-size:12px;font-weight:700">${x.id}</div><div style="font-size:11px;color:var(--muted)">${x.sesi}</div></div>${badge(x.status)}</div>`).join('')}
+      </div>
+    </div>
+    <div>
+      ${ht.length?`<div style="background:var(--rx);border:1px solid #f5a0a0;border-radius:10px;padding:14px;margin-bottom:12px">
+        <div style="font-weight:700;color:var(--r);margin-bottom:10px;font-size:13px">⚠️ Tempoh Hampir Tamat</div>
+        ${ht.map(x=>{const d=Math.ceil((new Date(x.tarikhTamat)-new Date())/86400000);return`<div style="display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:.5px solid #f5a0a0"><span style="color:var(--hd);font-weight:600">${x.id}</span><span style="color:var(--r);font-weight:700">${d<=0?'Tamat tempoh':d+' hari lagi'}</span></div>`}).join('')}
+        <div style="font-size:11px;color:var(--r);margin-top:8px">Boleh dilanjutkan sehingga 60 hari (Kaedah 16)</div>
+      </div>`:''}
+      <div class="card" style="background:var(--hx);border-color:var(--hl)">
+        <div class="card-title">Keputusan Tahkim</div>
+        ${[['Perdamaian',k.filter(x=>x.keputusan==='Damai').length,'var(--hl)'],['Talaq',k.filter(x=>x.keputusan==='Talaq').length,'var(--r)'],["Khul'",k.filter(x=>x.keputusan==="Khul'").length,'var(--p)'],['Belum Selesai',k.filter(x=>!x.keputusan).length,'var(--muted)']].map(([l,v,c])=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:.5px solid var(--border);font-size:12px"><span>${l}</span><span style="font-weight:700;color:${c}">${v}</span></div>`).join('')}
+      </div>
+      <div class="card" style="margin-top:12px">
+        <div class="card-title">Tindakan Segera</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-primary btn-full btn-sm" onclick="openTambahKes()">📁 + Daftar Kes Baru</button>
+          <button class="btn btn-outline btn-full btn-sm" onclick="navigate('laporan')">📄 + Laporan Baharu</button>
+          <button class="btn btn-ghost btn-full btn-sm" onclick="navigate('borang')">📋 Semua Borang Rasmi</button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function KES(id){return STATE.kes.find(x=>x.id===id)||{}}
+
+// ── KES LIST ─────────────────────────────────────────────
+let kesFilter='Semua';
+function renderKes(){
+  const k=STATE.kes.filter(x=>(kesFilter==='Semua'||x.status===kesFilter));
+  const canEdit=STATE.user.peranan!=='hakam';
+  return`
+  <div class="search-bar">
+    <input id="cari-kes" placeholder="🔍  Cari nombor kes, nama, mahkamah..." oninput="filterKes()" value="">
+    ${canEdit?`<button class="btn btn-primary btn-sm" onclick="openTambahKes()">📁 + Kes Baru</button>`:''}
+  </div>
+  <div class="filter-tabs">
+    ${['Semua','Aktif','Tangguh','Selesai'].map(f=>`<button class="ftab${kesFilter===f?' active':''}" onclick="setKesFilter('${f}')">${f}</button>`).join('')}
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table><thead><tr><th>No. Kes</th><th>No. Saman</th><th>Suami</th><th>Isteri</th><th>Mahkamah</th><th>Hakam Suami</th><th>Pelantikan</th><th>Status</th><th>Tindakan</th></tr></thead>
+    <tbody>${k.length===0?'<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--muted)">Tiada rekod.</td></tr>':
+    k.map(x=>`<tr>
+      <td><span class="link" onclick="navigate('kes-detail',KES('${x.id}'))">${x.id}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${x.noSaman}</td>
+      <td>${x.suami}</td><td>${x.isteri}</td>
+      <td style="font-size:11px;color:var(--muted)">${x.mahkamah.replace('Mahkamah Rendah Syariah ','MRS ')}</td>
+      <td style="font-size:11px">${x.hakamSuami||'-'}</td>
+      <td style="font-size:11px">${fmtDate(x.tarikhLantik)}</td>
+      <td>${badge(x.status)}</td>
+      <td><div style="display:flex;gap:5px">
+        <button class="btn btn-outline btn-sm" onclick="navigate('kes-detail',KES('${x.id}'))">Buka</button>
+        ${canEdit?`<button class="btn btn-ghost btn-sm" onclick="openEditKes('${x.id}')">Edit</button>`:''}
+        ${STATE.user.peranan==='admin'?`<button class="btn btn-danger btn-sm" onclick="padamKes('${x.id}')">Padam</button>`:''}
+      </div></td>
+    </tr>`).join('')}
+    </tbody></table>
+  </div>
+  <div id="kes-modal"></div>`;
+}
+function setKesFilter(f){kesFilter=f;navigate('kes')}
+function filterKes(){
+  const q=document.getElementById('cari-kes')?.value?.toLowerCase()||'';
+  document.querySelectorAll('#content tbody tr').forEach(tr=>{
+    const t=tr.textContent.toLowerCase();tr.style.display=t.includes(q)?'':'none';
+  });
+}
+async function padamKes(id){
+  if(!confirm(`Padam kes ${id}?`))return;
+  const res=await fetch(`/api/kes/${id}`,{method:'DELETE'});
+  if(!res.ok){const e=await res.json();alert(e.error);return}
+  STATE.kes=STATE.kes.filter(x=>x.id!==id);navigate('kes');
+}
+
+// ── KES FORM ─────────────────────────────────────────────
+let editKesId=null;
+function openTambahKes(){editKesId=null;showKesModal({id:'',noSaman:'',mahkamah:'',suami:'',kpSuami:'',isteri:'',kpIsteri:'',hakamSuami:'',hakamIsteri:'',tarikhLantik:'',tarikhTamat:'',status:'Aktif',jenis:'Hakam Qarabah',keputusan:''})}
+function openEditKes(id){editKesId=id;showKesModal(STATE.kes.find(x=>x.id===id)||{})}
+function showKesModal(d){
+  const html=`<div class="modal-overlay" id="kes-modal-overlay">
+  <div class="modal">
+    <div class="modal-hdr"><h2>${editKesId?'Kemaskini Rekod Kes':'Daftar Kes Hakam Baharu'}</h2><p>Sistem JKSNJ – Kaedah-Kaedah Hakam (Negeri Johor) 2022</p></div>
+    <div class="modal-body">
+      <div class="sec-hdr">Maklumat Kes</div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Nombor Kes *</label><input id="fid" value="${d.id||''}" placeholder="Cth: JHR-2025-003"></div>
+        <div class="field-wrap"><label>Nombor Saman</label><input id="fsaman" value="${d.noSaman||''}" placeholder="10004-046-XXXX-2025"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Nama Mahkamah</label><select id="fmkm">
+          <option>-- Pilih --</option>
+          ${['MRS Johor Bahru','MRS Kluang','MRS Muar','MRS Batu Pahat','MRS Pontian','MRS Segamat','MRS Kota Tinggi'].map(x=>`<option${d.mahkamah===x?' selected':''}>${x}</option>`).join('')}
+        </select></div>
+        <div class="field-wrap"><label>Jenis Pelantikan</label><select id="fjenis">
+          ${['Hakam Qarabah (Saudara Mara)','Panel Hakam Mahkamah'].map(x=>`<option${d.jenis===x?' selected':''}>${x}</option>`).join('')}
+        </select></div>
+      </div>
+      <div class="sec-hdr">Pihak Suami</div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Nama Penuh Suami *</label><input id="fsuami" value="${d.suami||''}"></div>
+        <div class="field-wrap"><label>No. Kad Pengenalan</label><input id="fkpsuami" value="${d.kpSuami||''}" placeholder="XXXXXX-XX-XXXX"></div>
+      </div>
+      <div class="field-wrap"><label>Nama Hakam Suami</label><input id="fhsuami" value="${d.hakamSuami||''}"></div>
+      <div class="sec-hdr">Pihak Isteri</div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Nama Penuh Isteri *</label><input id="fisteri" value="${d.isteri||''}"></div>
+        <div class="field-wrap"><label>No. Kad Pengenalan</label><input id="fkpisteri" value="${d.kpIsteri||''}" placeholder="XXXXXX-XX-XXXX"></div>
+      </div>
+      <div class="field-wrap"><label>Nama Hakam Isteri</label><input id="fhisteri" value="${d.hakamIsteri||''}"></div>
+      <div class="sec-hdr">Tempoh & Status</div>
+      <div class="field-row tri">
+        <div class="field-wrap"><label>Tarikh Pelantikan</label><input id="flantik" type="date" value="${d.tarikhLantik||''}"></div>
+        <div class="field-wrap"><label>Tarikh Tamat (30 Hari)</label><input id="ftamat" type="date" value="${d.tarikhTamat||''}"></div>
+        <div class="field-wrap"><label>Status</label><select id="fstatus">
+          ${['Aktif','Tangguh','Selesai'].map(x=>`<option${d.status===x?' selected':''}>${x}</option>`).join('')}
+        </select></div>
+      </div>
+      <div class="field-wrap"><label>Keputusan (jika selesai)</label><select id="fkeputusan">
+        ${['','Damai','Talaq',"Khul'"].map(x=>`<option${d.keputusan===x?' selected':''}>${x}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('kes-modal-overlay')">Batal</button>
+      <button class="btn btn-primary" onclick="simpanKes()">💾 ${editKesId?'Simpan Perubahan':'Daftar Kes'}</button>
+    </div>
+  </div></div>`;
+  const div=document.createElement('div');div.id='km-wrap';div.innerHTML=html;document.body.appendChild(div);
+}
+async function simpanKes(){
+  const d={
+    id:document.getElementById('fid').value.trim(),
+    noSaman:document.getElementById('fsaman').value.trim(),
+    mahkamah:document.getElementById('fmkm').value,
+    jenis:document.getElementById('fjenis').value,
+    suami:document.getElementById('fsuami').value.trim(),
+    kpSuami:document.getElementById('fkpsuami').value.trim(),
+    hakamSuami:document.getElementById('fhsuami').value.trim(),
+    isteri:document.getElementById('fisteri').value.trim(),
+    kpIsteri:document.getElementById('fkpisteri').value.trim(),
+    hakamIsteri:document.getElementById('fhisteri').value.trim(),
+    tarikhLantik:document.getElementById('flantik').value,
+    tarikhTamat:document.getElementById('ftamat').value,
+    status:document.getElementById('fstatus').value,
+    keputusan:document.getElementById('fkeputusan').value,
+  };
+  if(!d.id||!d.suami||!d.isteri){alert('Sila isi medan wajib (*)');return}
+  if(editKesId){
+    const res=await fetch(`/api/kes/${editKesId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+    if(!res.ok){const e=await res.json();alert(e.error);return}
+    STATE.kes=STATE.kes.map(x=>x.id===editKesId?d:x);
+  }else{
+    const res=await fetch('/api/kes',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});
+    if(!res.ok){const e=await res.json();alert(e.error);return}
+    STATE.kes.push(d);
+  }
+  closeAllModals();navigate('kes');
+}
+
+// ── KES DETAIL ───────────────────────────────────────────
+function renderKesDetail(k){
+  const BLIST=[
+    {id:'B1',no:'Borang 1',nama:'Pelantikan Hakam oleh Hakim',c:'var(--h)'},
+    {id:'B2',no:'Borang 2',nama:'Perwakilan Kuasa Penuh – Suami',c:'var(--b)'},
+    {id:'B3',no:'Borang 3',nama:'Perwakilan Kuasa Penuh – Isteri',c:'var(--b)'},
+    {id:'B4',no:'Borang 4',nama:'Wakalah Dan Penerimaan Hakam',c:'var(--p)'},
+    {id:'B9',no:'Borang 9',nama:'Laporan Majlis Tahkim',c:'var(--g)'},
+    {id:'J2',no:'Jadual Kedua',nama:"Sighah Talaq Dan Khul'",c:'#5c3292'},
+  ];
+  return`
+  <button class="btn btn-ghost btn-sm" onclick="navigate('kes')" style="margin-bottom:14px">← Kembali ke Senarai Kes</button>
+  <div class="kes-header">
+    <div style="font-size:12px;opacity:.7">KES HAKAM — ${k.mahkamah}</div>
+    <div style="font-size:22px;font-weight:900;margin-top:4px">${k.id}</div>
+    <div style="font-size:12px;opacity:.75;margin-top:2px">Saman: ${k.noSaman}</div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      ${[k.status,k.jenis].filter(Boolean).map(t=>`<span style="background:rgba(255,255,255,.2);padding:3px 12px;border-radius:12px;font-size:11px">${t}</span>`).join('')}
+      ${k.keputusan?`<span style="background:rgba(255,255,255,.25);padding:3px 12px;border-radius:12px;font-size:11px;font-weight:700">Keputusan: ${k.keputusan}</span>`:''}
+    </div>
+  </div>
+  <div class="kes-2col">
+    <div class="card">
+      <div class="card-title">👥 Pihak-pihak</div>
+      <div style="background:var(--hx);border-radius:7px;padding:10px;margin-bottom:8px">
+        <div style="font-size:10px;color:var(--h);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">SUAMI</div>
+        <div style="font-weight:700">${k.suami}</div>
+        <div style="font-size:11px;color:var(--muted)">No. KP: ${k.kpSuami||'-'}</div>
+      </div>
+      <div style="background:var(--px);border-radius:7px;padding:10px">
+        <div style="font-size:10px;color:var(--p);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">ISTERI</div>
+        <div style="font-weight:700">${k.isteri}</div>
+        <div style="font-size:11px;color:var(--muted)">No. KP: ${k.kpIsteri||'-'}</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">⚖️ Hakam Dilantik</div>
+      ${[['Hakam Suami',k.hakamSuami],['Hakam Isteri',k.hakamIsteri],['Jenis Pelantikan',k.jenis],['Saman',k.noSaman]].map(([l,v])=>`<div class="detail-row"><span class="detail-lbl">${l}</span><span class="detail-val">${v||'—'}</span></div>`).join('')}
+    </div>
+  </div>
+  <div class="tempoh-card">
+    <div style="font-weight:700;color:var(--hd);font-size:13px;margin-bottom:12px">📅 Tempoh Majlis Tahkim</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center">
+      <div><div style="font-size:10px;color:var(--h);text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:4px">Tarikh Pelantikan</div><div style="font-size:14px;font-weight:700">${fmtDate(k.tarikhLantik)}</div></div>
+      <div><div style="font-size:10px;color:var(--h);text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:4px">Tamat Tempoh (30 Hari)</div><div style="font-size:14px;font-weight:700;color:var(--r)">${fmtDate(k.tarikhTamat)}</div></div>
+      <div><div style="font-size:10px;color:var(--h);text-transform:uppercase;font-weight:700;letter-spacing:.5px;margin-bottom:4px">Status</div><div style="margin-top:4px">${badge(k.status)}</div></div>
+    </div>
+    <div class="note note-a" style="margin-top:12px;margin-bottom:0">⚠️ Boleh dilanjutkan tidak melebihi 60 hari dari tarikh pelanjutan (Kaedah 16).</div>
+  </div>
+  <div style="font-weight:700;color:var(--hd);font-size:13px;margin:16px 0 10px">📋 Borang Berkaitan Kes Ini</div>
+  <div class="borang-grid">
+    ${BLIST.map(b=>`<div class="borang-card" style="border-left-color:${b.c}" onclick="bukaBorangKes('${b.id}','${k.id}')">
+      <div style="font-size:10px;font-weight:700;color:${b.c};text-transform:uppercase;letter-spacing:.4px">${b.no}</div>
+      <div style="font-size:12px;font-weight:700;margin-top:3px;line-height:1.4">${b.nama}</div>
+    </div>`).join('')}
+  </div>`;
+}
+function bukaBorangKes(bid,kid){
+  STATE.borangKes=STATE.kes.find(x=>x.id===kid)||null;
+  STATE.borangId=bid;
+  navigate('borang');
+  setTimeout(()=>pilihBorang(bid),50);
+}
+
+// ── LAPORAN ──────────────────────────────────────────────
+function renderLaporan(){
+  const l=STATE.laporan;
+  const canEdit=STATE.user.peranan!=='hakam';
+  return`
+  <div class="note note-h">📌 <strong>Borang 9 – Kaedah 15:</strong> Kedua-dua Hakam hendaklah mengemukakan laporan bertulis kepada Mahkamah. Klik <strong>"Jana PDF"</strong> untuk cetak atau simpan sebagai PDF.</div>
+  ${canEdit?`<div style="display:flex;justify-content:flex-end;margin-bottom:14px"><button class="btn btn-primary btn-sm" onclick="openLaporanModal(null)">📄 + Laporan Baru (Borang 9)</button></div>`:''}
+  ${l.length===0?'<div style="text-align:center;padding:40px;color:var(--muted)">Tiada laporan. Klik "+ Laporan Baru" untuk tambah.</div>':''}
+  ${l.map(x=>`
+  <div class="lap-card" style="border-left-color:${x.status==='Lengkap'?'var(--hl)':'var(--a)'}">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">${x.id} — ${x.kes}</div>
+        <div style="font-size:14px;font-weight:700;margin-top:3px">${x.sesi}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">${badge(x.status)}${x.cadangan?badge(x.cadangan):''}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:12px;color:var(--muted);margin-bottom:10px">
+      <div>📅 ${fmtDate(x.tarikhMajlis)}</div>
+      <div>🏛️ ${x.mahkamah}</div>
+      <div>📍 ${x.tempat||'-'}</div>
+    </div>
+    ${x.cadangan?`<div style="font-size:12px;margin-bottom:10px"><span style="color:var(--muted)">Cadangan Keputusan: </span><strong style="color:${x.cadangan==='Talaq'?'var(--r)':x.cadangan==="Khul'"?'var(--p)':'var(--hl)'}">${x.cadangan}</strong></div>`:''}
+    ${x.fail?`<div style="font-size:12px;margin-bottom:10px">📎 <a href="/uploads/${x.fail}" target="_blank" style="color:var(--b);font-weight:700">Lihat Lampiran</a></div>`:''}
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold btn-sm" onclick="janaPdfB7('${x.id}')">📥 Jana PDF (Borang 9)</button>
+      <button class="btn btn-outline btn-sm" onclick="janaPdfB7('${x.id}')">🖨️ Cetak</button>
+      ${canEdit?`<button class="btn btn-ghost btn-sm" onclick="openLaporanModal('${x.id}')">Edit</button>`:''}
+      ${STATE.user.peranan==='admin'?`<button class="btn btn-danger btn-sm" onclick="padamLaporan('${x.id}')">Padam</button>`:''}
+    </div>
+  </div>`).join('')}
+  <div id="laporan-modal"></div>`;
+}
+async function padamLaporan(id){
+  if(!confirm(`Padam laporan ${id}?`))return;
+  const res=await fetch(`/api/laporan/${id}`,{method:'DELETE'});
+  if(!res.ok){const e=await res.json();alert(e.error);return}
+  STATE.laporan=STATE.laporan.filter(x=>x.id!==id);navigate('laporan');
+}
+let editLapId=null;
+function openLaporanModal(id){
+  editLapId=id;
+  const d=id?STATE.laporan.find(x=>x.id===id):{id:'L-'+Date.now().toString().slice(-6),kes:'',noSaman:'',mahkamah:'',hakamSuami:'',hakamIsteri:'',tarikhMajlis:'',tempat:'',sesi:'',latar:'',isu:'',punca:'',cadangan:'',catatan:'',status:'Draf',fail:''};
+  const html=`<div class="modal-overlay" id="lap-modal-overlay"><div class="modal">
+    <div class="modal-hdr"><h2>Borang 9 – Laporan Majlis Tahkim</h2><p>Kaedah 15 – Kaedah-Kaedah Hakam (Negeri Johor) 2022</p></div>
+    <div class="modal-body">
+      <div class="sec-hdr">Maklumat Kes & Majlis</div>
+      <div class="field-row">
+        <div class="field-wrap"><label>No. Kes *</label><select id="lkes" onchange="isiDataKes()">
+          <option value="">-- Pilih Kes --</option>
+          ${STATE.kes.map(k=>`<option value="${k.id}"${d.kes===k.id?' selected':''}>${k.id} — ${k.suami}</option>`).join('')}
+        </select></div>
+        <div class="field-wrap"><label>No. Saman</label><input id="lsaman" value="${d.noSaman||''}"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Nama Mahkamah</label><input id="lmkm" value="${d.mahkamah||''}"></div>
+        <div class="field-wrap"><label>Sesi / Tajuk Majlis *</label><input id="lsesi" value="${d.sesi||''}" placeholder="Cth: Sesi 1 – Pertemuan Awal"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Nama Hakam Suami</label><input id="lhsuami" value="${d.hakamSuami||''}"></div>
+        <div class="field-wrap"><label>Nama Hakam Isteri</label><input id="lhisteri" value="${d.hakamIsteri||''}"></div>
+      </div>
+      <div class="field-row">
+        <div class="field-wrap"><label>Tarikh Majlis</label><input type="date" id="ltarikh" value="${d.tarikhMajlis||''}"></div>
+        <div class="field-wrap"><label>Tempat Majlis</label><input id="ltempat" value="${d.tempat||''}"></div>
+      </div>
+      <div class="sec-hdr">Isi Laporan</div>
+      <div class="field-wrap"><label>(1) Latar Belakang & Perjalanan Majlis Tahkim</label><textarea id="llatar" rows="3" placeholder="Nyatakan bilangan sesi, tarikh, dan ringkasan setiap sesi...">${d.latar||''}</textarea></div>
+      <div class="field-wrap"><label>(2) Isu-Isu Yang Dibincangkan</label><textarea id="lisu" rows="3" placeholder="Nyatakan isu-isu utama yang dibangkitkan...">${d.isu||''}</textarea></div>
+      <div class="field-wrap"><label>(3) Punca Shiqaq</label><textarea id="lpunca" rows="3" placeholder="Nyatakan punca perkelahian berterusan...">${d.punca||''}</textarea></div>
+      <div class="field-wrap"><label>(4) Cadangan Keputusan Hakam</label><select id="lcadangan">
+        ${['-- Pilih Cadangan --','Perdamaian (Islah)','Talaq',"Khul'",'Rujuk ke Mahkamah'].map(x=>`<option${d.cadangan===x?' selected':''}>${x}</option>`).join('')}
+      </select></div>
+      <div class="field-wrap"><label>(5) Catatan & Pemerhatian Lain</label><textarea id="lcatatan" rows="2">${d.catatan||''}</textarea></div>
+      <div class="field-wrap"><label>Lampiran Dokumen (PDF/Gambar, maks 10MB)</label>
+        <input type="file" id="lfail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="padding:6px;border:1.5px solid var(--border);border-radius:8px;width:100%;font-size:13px">
+        ${d.fail?`<div style="margin-top:6px;font-size:12px">📎 Fail sedia ada: <a href="/uploads/${d.fail}" target="_blank" style="color:var(--b)">Lihat</a></div>`:''}
+      </div>
+      <div class="field-wrap"><label>Status Laporan</label><select id="lstatus">
+        ${['Draf','Lengkap'].map(x=>`<option${d.status===x?' selected':''}>${x}</option>`).join('')}
+      </select></div>
+      <div class="note note-r">⚠️ <strong>Kaedah 18:</strong> Keputusan Majlis Tahkim adalah <strong>MUKTAMAD</strong> dan tiada rayuan dibenarkan.</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('lap-modal-overlay')">Batal</button>
+      <button class="btn btn-outline" onclick="praLihatPdf()">🖨️ Preview PDF</button>
+      <button class="btn btn-gold" onclick="simpanLaporanDanPdf()">📥 Simpan & Jana PDF</button>
+    </div>
+  </div></div>`;
+  const div=document.createElement('div');div.id='lm-wrap';div.innerHTML=html;document.body.appendChild(div);
+}
+function isiDataKes(){
+  const id=document.getElementById('lkes')?.value;
+  const k=STATE.kes.find(x=>x.id===id);
+  if(!k)return;
+  document.getElementById('lsaman').value=k.noSaman||'';
+  document.getElementById('lmkm').value=k.mahkamah||'';
+  document.getElementById('lhsuami').value=k.hakamSuami||'';
+  document.getElementById('lhisteri').value=k.hakamIsteri||'';
+}
+function getLaporanFormData(){
+  return{
+    id:editLapId||('L-'+Date.now().toString().slice(-6)),
+    kes:document.getElementById('lkes').value,
+    noSaman:document.getElementById('lsaman').value,
+    mahkamah:document.getElementById('lmkm').value,
+    sesi:document.getElementById('lsesi').value,
+    hakamSuami:document.getElementById('lhsuami').value,
+    hakamIsteri:document.getElementById('lhisteri').value,
+    tarikhMajlis:document.getElementById('ltarikh').value,
+    tempat:document.getElementById('ltempat').value,
+    latar:document.getElementById('llatar').value,
+    isu:document.getElementById('lisu').value,
+    punca:document.getElementById('lpunca').value,
+    cadangan:document.getElementById('lcadangan').value.startsWith('--')?'':document.getElementById('lcadangan').value,
+    catatan:document.getElementById('lcatatan').value,
+    status:document.getElementById('lstatus').value,
+  };
+}
+function praLihatPdf(){
+  const d=getLaporanFormData();janaPdfB7Data(d);
+}
+async function simpanLaporanDanPdf(){
+  const d=getLaporanFormData();
+  if(!d.kes||!d.sesi){alert('Sila isi No. Kes dan Sesi.');return}
+  const formData=new FormData();
+  formData.append('data',JSON.stringify(d));
+  const fileInput=document.getElementById('lfail');
+  if(fileInput?.files[0])formData.append('fail',fileInput.files[0]);
+  if(editLapId){
+    const res=await fetch(`/api/laporan/${editLapId}`,{method:'PUT',body:formData});
+    if(!res.ok){const e=await res.json();alert(e.error);return}
+    STATE.laporan=STATE.laporan.map(x=>x.id===editLapId?d:x);
+  }else{
+    const res=await fetch('/api/laporan',{method:'POST',body:formData});
+    if(!res.ok){const e=await res.json();alert(e.error);return}
+    const result=await res.json();
+    d.id=result.id;STATE.laporan.push(d);
+  }
+  closeAllModals();janaPdfB7Data(d);navigate('laporan');
+}
+function janaPdfB7(id){
+  const d=STATE.laporan.find(x=>x.id===id);
+  if(d)janaPdfB7Data(d);
+}
+function janaPdfB7Data(d){
+  const w=window.open('','_blank','width=900,height=700');
+  if(!w){alert('Sila benarkan popup untuk jana PDF.');return}
+  const cad=d.cadangan||'';
+  const cadColor=cad==='Talaq'?'#c0392b':cad==="Khul'"?'#5c3292':cad.includes('Perdamaian')?'#1a5c38':'#333';
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Borang 9 – Laporan Majlis Tahkim</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Times New Roman',serif;color:#000;background:#fff;font-size:12pt}
+.page{max-width:210mm;margin:0 auto;padding:20mm}.header{text-align:center;border-bottom:2px solid #1a5c38;padding-bottom:14px;margin-bottom:18px}
+.jawi{font-size:22pt;font-family:'Traditional Arabic',serif;direction:rtl;margin-bottom:6px;color:#1a5c38}
+h1{font-size:13pt;font-weight:bold;color:#0d3320;line-height:1.5}h2{font-size:11pt;color:#333;margin-top:4px}
+h3{font-size:14pt;font-weight:bold;color:#1a5c38;margin-top:8px;text-decoration:underline}
+.kaedah{font-size:10pt;color:#555;margin-top:4px;font-style:italic}.sec{margin-bottom:14px}
+.sec-t{font-weight:bold;font-size:11pt;background:#e8f5ee;padding:5px 10px;border-left:3px solid #1a5c38;margin-bottom:8px}
+.fr{display:flex;gap:12px;margin-bottom:8px}.f{flex:1}.f label{font-size:10pt;font-weight:bold;display:block;margin-bottom:2px}
+.line{border-bottom:1px solid #000;min-height:22px;padding:2px 4px;font-size:11pt;background:#fafff8}
+.tt{display:flex;justify-content:space-between;margin-top:30px}.ttb{text-align:center}
+.ttl{border-bottom:1px solid #000;width:180px;margin:0 auto 4px;height:30px}.ttx{font-size:10pt}
+.note{background:#fff8e1;border:1px solid #f0c070;padding:8px 12px;margin:10px 0;font-size:10pt}
+.ref{font-size:9pt;color:#555;text-align:right;margin-top:20px;padding-top:8px;border-top:1px solid #ccc}
+@media print{button{display:none}body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head>
+<body><div class="page">
+<div class="header">
+  <div class="jawi">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+  <h1>JABATAN KEHAKIMAN SYARIAH NEGERI JOHOR</h1>
+  <h2>Mahkamah Syariah Negeri Johor</h2>
+  <h3>BORANG 9 – LAPORAN MAJLIS TAHKIM</h3>
+  <div class="kaedah">Kaedah 15 – Kaedah-Kaedah Hakam (Negeri Johor) 2022 – Jadual Pertama</div>
+</div>
+<div class="sec">
+  <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:10pt">
+    <div>No. Saman: <strong>${d.noSaman||'—'}</strong></div><div>ID Laporan: <strong>${d.id}</strong></div>
+  </div>
+  <div class="fr">
+    <div class="f"><label>Nama Mahkamah:</label><div class="line">${d.mahkamah||''}</div></div>
+    <div class="f"><label>Tarikh Majlis:</label><div class="line">${fmtDate(d.tarikhMajlis)}</div></div>
+  </div>
+  <div class="f"><label>Tempat Majlis Tahkim:</label><div class="line">${d.tempat||''}</div></div>
+</div>
+<div class="sec">
+  <div class="sec-t">MAKLUMAT HAKAM</div>
+  <div class="fr">
+    <div class="f"><label>Nama Hakam Suami:</label><div class="line">${d.hakamSuami||''}</div></div>
+    <div class="f"><label>Nama Hakam Isteri:</label><div class="line">${d.hakamIsteri||''}</div></div>
+  </div>
+</div>
+<div class="sec">
+  <div class="sec-t">ISI LAPORAN</div>
+  <div class="f" style="margin-bottom:10px"><label>(1) Latar Belakang & Perjalanan Majlis Tahkim:</label><div class="line" style="min-height:60px;padding:6px">${d.latar||''}</div></div>
+  <div class="f" style="margin-bottom:10px"><label>(2) Isu-Isu Yang Dibincangkan:</label><div class="line" style="min-height:60px;padding:6px">${d.isu||''}</div></div>
+  <div class="f" style="margin-bottom:10px"><label>(3) Punca Shiqaq:</label><div class="line" style="min-height:60px;padding:6px">${d.punca||''}</div></div>
+  <div class="f" style="margin-bottom:10px"><label>(4) Cadangan Keputusan Hakam:</label><div class="line" style="font-weight:bold;color:${cadColor};padding:6px;min-height:30px">${cad||'—'}</div></div>
+  <div class="f" style="margin-bottom:10px"><label>(5) Catatan & Pemerhatian Lain:</label><div class="line" style="min-height:50px;padding:6px">${d.catatan||''}</div></div>
+</div>
+<div class="note">⚠️ Kaedah 18: Keputusan Majlis Tahkim adalah <strong>MUKTAMAD</strong> dan tiada rayuan dibenarkan.</div>
+<div class="tt">
+  <div class="ttb"><div class="ttl"></div><div class="ttx">Tandatangan Hakam Suami<br>(${d.hakamSuami||'_______________'})</div></div>
+  <div class="ttb"><div class="ttl"></div><div class="ttx">Tandatangan Hakam Isteri<br>(${d.hakamIsteri||'_______________'})</div></div>
+  <div class="ttb"><div class="ttl"></div><div class="ttx">Disahkan oleh Hakim Syarie<br>Tarikh: _______________</div></div>
+</div>
+<div class="ref">Dicetak melalui Sistem Portal Hakam JKSNJ | ${new Date().toLocaleDateString('ms-MY',{day:'2-digit',month:'long',year:'numeric'})}</div>
+</div>
+<div style="text-align:center;padding:16px;border-top:1px solid #ccc;margin-top:20px">
+  <button onclick="window.print()" style="background:#1a5c38;color:#fff;padding:10px 28px;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-right:10px">🖨️ Cetak / Simpan PDF</button>
+  <button onclick="window.close()" style="background:#555;color:#fff;padding:10px 20px;border:none;border-radius:6px;font-size:14px;cursor:pointer">Tutup</button>
+</div></body></html>`);
+  w.document.close();
+}
+
+// ── BORANG ────────────────────────────────────────────────
+let aktifBorang=null;
+const BORANG_LIST=[
+  {id:'B1',no:'Borang 1',nama:'Pelantikan Hakam Suami/Isteri Oleh Hakim',sub:'Subkaedah 4(1) dan 6(3)',ikon:'⚖️',c:'var(--h)'},
+  {id:'B2',no:'Borang 2',nama:'Notis Perwakilan Kuasa Penuh Oleh Suami',sub:'Subkaedah 6(1) dan 12(2)(c)',ikon:'👨',c:'var(--b)'},
+  {id:'B3',no:'Borang 3',nama:'Notis Perwakilan Kuasa Penuh Oleh Isteri',sub:'Subkaedah 6(1) dan 12(2)(c)',ikon:'👩',c:'var(--b)'},
+  {id:'B4',no:'Borang 4',nama:'Wakalah Dan Penerimaan Hakam',sub:'Subkaedah 6(2)',ikon:'📜',c:'var(--p)'},
+  {id:'B7',no:'Borang 7',nama:'Notis Penarikan Diri Hakam',sub:'Subkaedah 12(4)(d) dan 19(b)',ikon:'🚫',c:'var(--a)'},
+  {id:'B8',no:'Borang 8',nama:'Notis Pemecatan Hakam',sub:'Subkaedah 12(4)',ikon:'❌',c:'var(--r)'},
+  {id:'B9',no:'Borang 9',nama:'Laporan Majlis Tahkim',sub:'Kaedah 15',ikon:'📄',c:'var(--g)'},
+  {id:'J2',no:'Jadual Kedua',nama:"Sighah Talaq Dan Khul'",sub:'Kaedah 16',ikon:'🕌',c:'#5c3292'},
+];
+function renderBorang(){
+  const subs=STATE.subs;
+  return`
+  <div id="borang-grid-wrap">
+    <div class="note note-h">📋 <strong>Jadual Pertama – Kaedah-Kaedah Hakam (Negeri Johor) 2022.</strong> Pilih borang untuk diisi, kemukakan dan jana PDF.</div>
+    <div class="borang-grid">
+      ${BORANG_LIST.map(b=>`<div class="borang-card" style="border-left-color:${b.c}" onclick="pilihBorang('${b.id}')">
+        <div style="font-size:22px;margin-bottom:8px">${b.ikon}</div>
+        <div style="font-size:10px;font-weight:700;color:${b.c};text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">${b.no} — ${b.sub}</div>
+        <div style="font-size:13px;font-weight:700;line-height:1.4">${b.nama}</div>
+      </div>`).join('')}
+    </div>
+    ${subs.length?`<div class="borang-list-subs">
+      <div style="font-weight:700;color:var(--hd);font-size:13px;margin-bottom:10px">Rekod Pengemukaan Terkini</div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <table><thead><tr><th>Rujukan</th><th>Borang</th><th>Kes</th><th>Tarikh</th><th>Pengguna</th><th>Tindakan</th></tr></thead>
+        <tbody>${subs.slice(-5).reverse().map(s=>`<tr>
+          <td style="font-weight:700;color:var(--b);font-size:11px">${s.id}</td>
+          <td style="font-weight:600">${s.no_borang||s.noBorang}</td>
+          <td style="font-size:11px;color:var(--muted)">${s.kes_id||s.kes||'—'}</td>
+          <td style="font-size:11px;color:var(--muted)">${fmtDate(s.tarikh)}</td>
+          <td style="font-size:11px">${s.user_nama||s.user}</td>
+          <td><div style="display:flex;gap:5px">
+            <button class="btn btn-ghost btn-sm" onclick="cetakBorangUmum('${s.id}')">🖨️ Cetak</button>
+            ${STATE.user.peranan==='admin'?`<button class="btn btn-danger btn-sm" onclick="padamBorang('${s.id}')">Padam</button>`:''}
+          </div></td>
+        </tr>`).join('')}
+        </tbody></table>
+      </div>
+    </div>`:''}
+  </div>
+  <div id="borang-isi-wrap" style="display:none"></div>
+  <div id="borang-success" style="display:none"></div>`;
+}
+function pilihBorang(id){
+  aktifBorang=id;
+  const b=BORANG_LIST.find(x=>x.id===id);
+  const k=STATE.borangKes||null;
+  const AKUAN={
+    B2:"Saya [Nama Suami, No. KP] dengan ini melantik dan mewakilkan kepada [Nama Hakam, No. KP Hakam] sebagai Hakam bagi pihak saya dalam Saman No. [No. Saman] untuk perdamaian suami isteri atau melafazkan satu talaq atau khul' terhadap isteri saya [Nama Isteri, No. KP Isteri] di hadapan Mahkamah [Nama Mahkamah] mulai [tarikh] hingga dibatalkan oleh saya atau Mahkamah.",
+    B3:"Saya [Nama Isteri, No. KP] dengan ini mewakilkan dengan kuasa penuh kepada [Nama Hakam Isteri, No. KP] sebagai Hakam bagi pihak saya dalam Saman No. [No. Saman] untuk menerima perdamaian suami isteri atau lafaz talaq atau khul' Hakam suami saya [Nama Hakam Suami, No. KP] di hadapan Mahkamah [Nama Mahkamah] mulai [tarikh] hingga dibatalkan oleh saya atau Mahkamah.",
+    B4:"Saya [Nama, No. KP Suami atau Isteri] dengan ini melantik dan mewakilkan kepada [Nama Hakam, No. KP Hakam] sebagai Hakam bagi pihak saya dalam Saman No. [No. Saman] di Mahkamah [Nama Mahkamah] mulai [tarikh] hingga dibatalkan oleh saya atau Mahkamah.",
+    J2:"Jadual Kedua – Sighah Talaq dan Khul' [Kaedah 16]. Pilih jenis lafaz dan isi maklumat yang diperlukan. Lafaz hendaklah diucapkan di hadapan Mahkamah mengikut format yang ditetapkan."
+  };
+  const akuan=AKUAN[id]?`<div class="akuan"><div class="akuan-title">Akuan / Lafaz Rasmi</div><div class="akuan-text">${AKUAN[id]}</div></div>`:'';
+  const kesInfo=k?`<div style="background:var(--hx);padding:8px 12px;border-radius:7px;font-size:12px;margin-bottom:14px">Kes: <strong>${k.id}</strong> | Saman: ${k.noSaman} | ${k.mahkamah}</div>`:'';
+  const fields=getBorangFields(id,k);
+  const html=`
+  <button class="btn btn-ghost btn-sm" onclick="kembaliBorang()" style="margin-bottom:14px">← Kembali ke Senarai Borang</button>
+  <div style="background:var(--hd);border-radius:12px;padding:20px;color:#fff;margin-bottom:16px">
+    <div style="font-size:10px;opacity:.6;letter-spacing:1px;text-transform:uppercase">JABATAN KEHAKIMAN SYARIAH NEGERI JOHOR</div>
+    <div style="font-size:10px;opacity:.6;margin-top:2px">Kaedah-Kaedah Hakam (Negeri Johor) 2022</div>
+    <div style="font-size:22px;font-weight:900;margin-top:8px">${b.no}</div>
+    <div style="font-size:14px;opacity:.9;margin-top:2px">${b.nama}</div>
+    ${k?`<div style="background:rgba(255,255,255,.12);border-radius:7px;padding:8px 12px;margin-top:10px;font-size:12px">Kes: ${k.id} | Saman: ${k.noSaman}</div>`:''}
+  </div>
+  <div style="font-size:11px;color:var(--muted);font-style:italic;margin-bottom:14px">📌 ${b.sub} — Jadual Pertama, Kaedah-Kaedah Hakam (Negeri Johor) 2022</div>
+  ${akuan}${kesInfo}${fields}
+  <div class="field-wrap" style="margin-top:16px">
+    <label>Lampiran Dokumen (PDF/Gambar, maks 10MB)</label>
+    <input type="file" id="bf-fail" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="padding:6px;border:1.5px solid var(--border);border-radius:8px;width:100%;font-size:13px">
+  </div>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:14px;border-top:1px solid var(--border)">
+    <button class="btn btn-ghost" onclick="cetakBorangIsi()">🖨️ Cetak Sahaja</button>
+    <button class="btn btn-gold" onclick="hantarBorang()">📤 Kemukakan & Jana PDF</button>
+  </div>`;
+  document.getElementById('borang-grid-wrap').style.display='none';
+  document.getElementById('borang-isi-wrap').style.display='block';
+  document.getElementById('borang-isi-wrap').innerHTML=html;
+  if(id==='J2')setTimeout(updateSighahPreview,50);
+}
+function getBorangFields(id,k){
+  if(id==='B1')return`
+    <div class="sec-hdr">Maklumat Kes</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Mahkamah</label><input id="bf-mahkamah" value="${k?.mahkamah||''}"></div>
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+    </div>
+    <div class="sec-hdr">Suami</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Penuh Suami</label><input id="bf-suami" value="${k?.suami||''}"></div>
+      <div class="field-wrap"><label>No. KP Suami</label><input id="bf-kpsuami" value="${k?.kpSuami||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Suami</label><input id="bf-hsuami" value="${k?.hakamSuami||''}"></div>
+      <div class="field-wrap"><label>No. KP Hakam Suami</label><input id="bf-kphsuami"></div>
+    </div>
+    <div class="sec-hdr">Isteri</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Penuh Isteri</label><input id="bf-isteri" value="${k?.isteri||''}"></div>
+      <div class="field-wrap"><label>No. KP Isteri</label><input id="bf-kpisteri" value="${k?.kpIsteri||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Isteri</label><input id="bf-histeri" value="${k?.hakamIsteri||''}"></div>
+      <div class="field-wrap"><label>No. KP Hakam Isteri</label><input id="bf-kphisteri"></div>
+    </div>
+    <div class="sec-hdr">Pelantikan</div><div class="field-row tri">
+      <div class="field-wrap"><label>Jenis Pelantikan</label><select id="bf-jenis"><option>Hakam Qarabah (Saudara Mara)</option><option>Panel Hakam Mahkamah</option></select></div>
+      <div class="field-wrap"><label>Tarikh Pelantikan</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Nama Hakim</label><input id="bf-hakim"></div>
+    </div>`;
+  if(id==='B2'){return`
+    <div class="sec-hdr">Maklumat Suami (Pemberi Wakalah)</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Penuh Suami</label><input id="bf-nama" value="${k?.suami||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Suami</label><input id="bf-kp" value="${k?.kpSuami||''}"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Hakam Suami Yang Dilantik</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam</label><input id="bf-hakam" value="${k?.hakamSuami||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam</label><input id="bf-kphakam"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Kes</div><div class="field-row">
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+      <div class="field-wrap"><label>Nama Mahkamah</label><input id="bf-mahkamah" value="${k?.mahkamah||''}"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Isteri</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Penuh Isteri</label><input id="bf-isteri" value="${k?.isteri||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Isteri</label><input id="bf-kpisteri" value="${k?.kpIsteri||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Mula Kuasa</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Tarikh Borang</label><input type="date" id="bf-tarikhborang"></div>
+    </div>
+    <div class="sec-hdr">Penerimaan Oleh Hakam</div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Penerimaan Hakam</label><input type="date" id="bf-tarikhterima"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Menyaksikan</label><input id="bf-hakim"></div>
+    </div>`}
+  if(id==='B3'){return`
+    <div class="sec-hdr">Maklumat Isteri (Pemberi Wakalah)</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Penuh Isteri</label><input id="bf-nama" value="${k?.isteri||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Isteri</label><input id="bf-kp" value="${k?.kpIsteri||''}"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Hakam Isteri Yang Dilantik</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Isteri</label><input id="bf-hakam" value="${k?.hakamIsteri||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam Isteri</label><input id="bf-kphakam"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Kes</div><div class="field-row">
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+      <div class="field-wrap"><label>Nama Mahkamah</label><input id="bf-mahkamah" value="${k?.mahkamah||''}"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Hakam Suami (Pihak Lawan)</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Suami</label><input id="bf-hsuami" value="${k?.hakamSuami||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam Suami</label><input id="bf-kphsuami"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Mula Kuasa</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Tarikh Borang</label><input type="date" id="bf-tarikhborang"></div>
+    </div>
+    <div class="sec-hdr">Penerimaan Oleh Hakam</div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Penerimaan Hakam</label><input type="date" id="bf-tarikhterima"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Menyaksikan</label><input id="bf-hakim"></div>
+    </div>`}
+  if(id==='B4'){return`
+    <div class="sec-hdr">Maklumat Pihak Yang Melantik (Suami / Isteri)</div><div class="field-row">
+      <div class="field-wrap"><label>Pihak</label><select id="bf-pihak"><option>Suami</option><option>Isteri</option></select></div>
+      <div class="field-wrap"><label>Nama Penuh</label><input id="bf-nama" value="${k?`${k.suami||''}`:''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>No. Kad Pengenalan</label><input id="bf-kp" value="${k?.kpSuami||''}"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Hakam Yang Dilantik</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam</label><input id="bf-hakam" value="${k?.hakamSuami||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam</label><input id="bf-kphakam"></div>
+    </div>
+    <div class="sec-hdr">Maklumat Kes</div><div class="field-row">
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+      <div class="field-wrap"><label>Nama Mahkamah</label><input id="bf-mahkamah" value="${k?.mahkamah||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Mula</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Tarikh Borang</label><input type="date" id="bf-tarikhborang"></div>
+    </div>
+    <div class="sec-hdr">Penerimaan Oleh Hakam</div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Penerimaan Hakam</label><input type="date" id="bf-tarikhterima"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Menyaksikan</label><input id="bf-hakim"></div>
+    </div>`}
+  if(id==='B7'){return`
+    <div class="sec-hdr">Maklumat Hakam Yang Menarik Diri</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam</label><input id="bf-hakam" value=""></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam</label><input id="bf-kphakam"></div>
+    </div>
+    <div class="sec-hdr">Pihak Yang Diwakili</div><div class="field-row">
+      <div class="field-wrap"><label>Mewakili</label><select id="bf-pihak"><option>Suami</option><option>Isteri</option></select></div>
+      <div class="field-wrap"><label>Nama Suami / Isteri</label><input id="bf-nama" value="${k?`${k.suami||''}`:''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>No. Kad Pengenalan Suami / Isteri</label><input id="bf-kp" value="${k?.kpSuami||''}"></div>
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Notis</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Menyaksikan</label><input id="bf-hakim"></div>
+    </div>`}
+  if(id==='B8'){return`
+    <div class="note note-r"><strong>Subkaedah 12(4):</strong> Mahkamah memecat dan membatalkan pelantikan kedua-dua Hakam.</div>
+    <div class="sec-hdr">Hakam Suami Yang Dipecat</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Suami</label><input id="bf-hsuami" value="${k?.hakamSuami||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam Suami</label><input id="bf-kphsuami"></div>
+    </div>
+    <div class="sec-hdr">Hakam Isteri Yang Dipecat</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Isteri</label><input id="bf-histeri" value="${k?.hakamIsteri||''}"></div>
+      <div class="field-wrap"><label>No. Kad Pengenalan Hakam Isteri</label><input id="bf-kphisteri"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Tarikh Pemecatan</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Mengeluarkan Notis</label><input id="bf-hakim"></div>
+    </div>`}
+  if(id==='B9')return`
+    <div class="note note-h">Untuk Borang 9 yang lengkap, gunakan menu <strong>Laporan Tahkim</strong> di bar sisi kiri.</div>
+    <div class="field-row">
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+      <div class="field-wrap"><label>Nama Mahkamah</label><input id="bf-mahkamah" value="${k?.mahkamah||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Hakam Suami</label><input id="bf-hsuami" value="${k?.hakamSuami||''}"></div>
+      <div class="field-wrap"><label>Hakam Isteri</label><input id="bf-histeri" value="${k?.hakamIsteri||''}"></div>
+    </div>
+    <div class="field-wrap"><label>Cadangan Keputusan</label><select id="bf-cadangan"><option>-- Pilih --</option><option>Perdamaian (Islah)</option><option>Talaq</option><option>Khul'</option><option>Rujuk ke Mahkamah</option></select></div>`;
+  if(id==='J2'){return`
+    <div class="sec-hdr">Jenis Sighah</div>
+    <div class="field-wrap"><label>Jenis Lafaz</label><select id="bf-jenis" onchange="updateSighahPreview()">
+      <option value="talaq-prinsipal">Sighah Talaq – Kuasa Penuh Prinsipal</option>
+      <option value="talaq-mahkamah">Sighah Talaq – Kuasa Penuh Mahkamah</option>
+      <option value="khul-prinsipal">Sighah Khul' – Kuasa Penuh Prinsipal</option>
+      <option value="khul-mahkamah">Sighah Khul' – Kuasa Penuh Mahkamah</option>
+    </select></div>
+    <div class="sec-hdr">Maklumat Pihak-Pihak</div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Suami</label><input id="bf-hsuami" value="${k?.hakamSuami||''}" oninput="updateSighahPreview()"></div>
+      <div class="field-wrap"><label>Nama Suami (Prinsipal)</label><input id="bf-suami" value="${k?.suami||''}" oninput="updateSighahPreview()"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam Isteri</label><input id="bf-histeri" value="${k?.hakamIsteri||''}" oninput="updateSighahPreview()"></div>
+      <div class="field-wrap"><label>Nama Isteri</label><input id="bf-isteri" value="${k?.isteri||''}" oninput="updateSighahPreview()"></div>
+    </div>
+    <div id="bf-khul-fields" style="display:none">
+      <div class="sec-hdr">Kadar 'Iwadh (untuk Khul')</div><div class="field-row">
+        <div class="field-wrap"><label>Jumlah (RM)</label><input type="number" id="bf-iwadh" placeholder="Cth: 1000" oninput="updateSighahPreview()"></div>
+        <div class="field-wrap"><label>Atau Harta Lain / Manfaat Yang Bernilai</label><input id="bf-harta" placeholder="Tinggalkan kosong jika tiada" oninput="updateSighahPreview()"></div>
+      </div>
+    </div>
+    <div class="sec-hdr">Pratonton Lafaz Sighah</div>
+    <div id="sighah-preview" style="background:var(--gx);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:13px;line-height:1.8;font-style:italic;color:#3a2a00;min-height:80px"></div>
+    <div class="field-row" style="margin-top:12px">
+      <div class="field-wrap"><label>Tarikh Lafaz</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Menyaksikan</label><input id="bf-hakim"></div>
+    </div>`}
+  return`
+    <div class="field-row">
+      <div class="field-wrap"><label>Nombor Saman</label><input id="bf-saman" value="${k?.noSaman||''}"></div>
+      <div class="field-wrap"><label>Nama Mahkamah</label><input id="bf-mahkamah" value="${k?.mahkamah||''}"></div>
+    </div><div class="field-row">
+      <div class="field-wrap"><label>Nama Hakam</label><input id="bf-hakam"></div>
+      <div class="field-wrap"><label>No. KP Hakam</label><input id="bf-kphakam"></div>
+    </div>
+    <div class="field-wrap"><label>Sebab / Alasan</label><textarea id="bf-sebab" rows="3" placeholder="Nyatakan sebab dengan terperinci..."></textarea></div>
+    <div class="field-row">
+      <div class="field-wrap"><label>Tarikh</label><input type="date" id="bf-tarikh"></div>
+      <div class="field-wrap"><label>Nama Hakim Yang Merekodkan</label><input id="bf-hakim"></div>
+    </div>`;
+}
+function kembaliBorang(){STATE.borangKes=null;navigate('borang')}
+function updateSighahPreview(){
+  const jenis=document.getElementById('bf-jenis')?.value||'talaq-prinsipal';
+  const hsuami=document.getElementById('bf-hsuami')?.value||'___________';
+  const suami=document.getElementById('bf-suami')?.value||'___________';
+  const histeri=document.getElementById('bf-histeri')?.value||'___________';
+  const isteri=document.getElementById('bf-isteri')?.value||'___________';
+  const iwadh=document.getElementById('bf-iwadh')?.value;
+  const harta=document.getElementById('bf-harta')?.value;
+  const bayaran=iwadh?`Ringgit Malaysia ${iwadh}`:(harta||'___________');
+  const khulFields=document.getElementById('bf-khul-fields');
+  if(khulFields)khulFields.style.display=jenis.startsWith('khul')?'block':'none';
+  const preview=document.getElementById('sighah-preview');
+  if(!preview)return;
+  let lafaz='';
+  if(jenis==='talaq-prinsipal')
+    lafaz=`"Saya ${hsuami} dengan kuasa yang diberi oleh ${suami} menceraikan ${isteri} (Nama Isteri) dengan talaq satu."`;
+  else if(jenis==='talaq-mahkamah')
+    lafaz=`"Saya ${hsuami} dengan kuasa penuh yang diberi oleh Mahkamah, bagi pihak suami ${suami}, menceraikan ${isteri} dengan talaq satu."`;
+  else if(jenis==='khul-prinsipal')
+    lafaz=`<strong>Ijab Hakam Suami:</strong><br>"Saya ${hsuami} dengan kuasa yang diberi oleh ${suami} menceraikan ${isteri} dengan khul' sebanyak ${bayaran}."<br><br><strong>Qabul Hakam Isteri:</strong><br>"Saya ${histeri} terima khul' bagi pihak ${isteri} atas persetujuannya sebanyak ${bayaran} yang tersebut."`;
+  else if(jenis==='khul-mahkamah')
+    lafaz=`<strong>Lafaz Hakam Suami:</strong><br>"Saya ${hsuami} dengan kuasa penuh yang diberi oleh Mahkamah, bagi pihak ${suami}, menceraikan ${isteri} dengan khul' sebanyak ${bayaran}."<br><br><strong>Lafaz Hakam Isteri:</strong><br>"Saya ${histeri} sebagai Hakam bagi pihak ${isteri}, menerima khul' sebanyak ${bayaran} yang tersebut."`;
+  preview.innerHTML=lafaz;
+}
+async function hantarBorang(){
+  const b=BORANG_LIST.find(x=>x.id===aktifBorang);
+  const data={};
+  document.querySelectorAll('#borang-isi-wrap input,#borang-isi-wrap select,#borang-isi-wrap textarea').forEach(el=>{
+    if(el.id.startsWith('bf-')&&el.id!=='bf-fail')data[el.id.replace('bf-','')]=el.value
+  });
+  const submission={borang:aktifBorang,noBorang:b.no,nama:b.nama,kes:STATE.borangKes?.id||'',data,user:STATE.user.nama};
+  const formData=new FormData();
+  formData.append('submission',JSON.stringify(submission));
+  const fileInput=document.getElementById('bf-fail');
+  if(fileInput?.files[0])formData.append('fail',fileInput.files[0]);
+  const res=await fetch('/api/borang',{method:'POST',body:formData});
+  if(!res.ok){alert('Gagal menyimpan borang.');return}
+  const result=await res.json();
+  const sub={...submission,id:result.id,tarikh:new Date().toISOString()};
+  STATE.subs.push(sub);
+  cetakBorangData(b.no,b.nama,data,STATE.borangKes);
+  document.getElementById('borang-grid-wrap').style.display='none';
+  document.getElementById('borang-isi-wrap').style.display='none';
+  document.getElementById('borang-success').style.display='block';
+  document.getElementById('borang-success').innerHTML=`<div class="success-wrap">
+    <div class="success-icon">✅</div>
+    <div style="font-size:20px;font-weight:800;color:var(--hd);margin-bottom:8px">${b.no} Berjaya Dikemukakan</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Rujukan: <strong>${sub.id}</strong></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:24px">Rekod disimpan dalam sistem JKSNJ.</div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-outline" onclick="navigate('borang')">← Kembali ke Borang</button>
+      <button class="btn btn-primary" onclick="navigate('kes')">Lihat Rekod Kes</button>
+    </div>
+  </div>`;
+}
+function cetakBorangIsi(){
+  const b=BORANG_LIST.find(x=>x.id===aktifBorang);
+  const data={};
+  document.querySelectorAll('#borang-isi-wrap input,#borang-isi-wrap select,#borang-isi-wrap textarea').forEach(el=>{if(el.id.startsWith('bf-')&&el.id!=='bf-fail')data[el.id.replace('bf-','')]=el.value});
+  cetakBorangData(b.no,b.nama,data,STATE.borangKes);
+}
+function cetakBorangData(noBorang,namaBorang,data,kes){
+  const w=window.open('','_blank','width=900,height=700');
+  if(!w){alert('Sila benarkan popup.');return}
+  const rows=Object.entries(data).filter(([k,v])=>v).map(([k,v])=>`<div class="fr"><div class="f"><label>${k.replace(/_/g,' ').replace(/([A-Z])/g,' $1')}:</label><div class="line">${v}</div></div></div>`).join('');
+  const kesInfo=kes?`<div style="background:#e8f5ee;padding:8px 12px;border-radius:6px;font-size:10pt;margin-bottom:14px">Kes: <strong>${kes.id}</strong> | Saman: ${kes.noSaman} | ${kes.mahkamah}</div>`:'';
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${noBorang}</title>
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Times New Roman',serif;color:#000;background:#fff;font-size:12pt}
+.page{max-width:210mm;margin:0 auto;padding:20mm}.header{text-align:center;border-bottom:2px solid #1a5c38;padding-bottom:14px;margin-bottom:18px}
+.jawi{font-size:22pt;font-family:'Traditional Arabic',serif;direction:rtl;margin-bottom:6px;color:#1a5c38}
+h1{font-size:13pt;font-weight:bold;color:#0d3320;line-height:1.5}h2{font-size:11pt;color:#333;margin-top:4px}
+h3{font-size:14pt;font-weight:bold;color:#1a5c38;margin-top:8px;text-decoration:underline}
+.kaedah{font-size:10pt;color:#555;margin-top:4px;font-style:italic}
+.fr{margin-bottom:8px}.f{}.f label{font-size:10pt;font-weight:bold;display:block;margin-bottom:2px}
+.line{border-bottom:1px solid #000;min-height:22px;padding:2px 4px;font-size:11pt;background:#fafff8}
+.tt{display:flex;justify-content:space-between;margin-top:30px}.ttb{text-align:center}
+.ttl{border-bottom:1px solid #000;width:180px;margin:0 auto 4px;height:30px}.ttx{font-size:10pt}
+.ref{font-size:9pt;color:#555;text-align:right;margin-top:20px;padding-top:8px;border-top:1px solid #ccc}
+@media print{button{display:none}body{-webkit-print-color-adjust:exact}}</style></head>
+<body><div class="page">
+<div class="header">
+  <div class="jawi">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+  <h1>JABATAN KEHAKIMAN SYARIAH NEGERI JOHOR</h1>
+  <h2>Mahkamah Syariah Negeri Johor</h2>
+  <h3>${noBorang} – ${namaBorang}</h3>
+  <div class="kaedah">Kaedah-Kaedah Hakam (Negeri Johor) 2022 – Jadual Pertama</div>
+</div>
+${kesInfo}${rows||'<p style="color:#999;font-style:italic">Borang diisi secara manual.</p>'}
+<div class="tt">
+  <div class="ttb"><div class="ttl"></div><div class="ttx">Tandatangan Pemohon<br>Tarikh: _______________</div></div>
+  <div class="ttb"><div class="ttl"></div><div class="ttx">Disahkan Hakim/Pendaftar<br>Tarikh: _______________</div></div>
+</div>
+<div class="ref">Dicetak melalui Sistem Portal Hakam JKSNJ | ${new Date().toLocaleDateString('ms-MY',{day:'2-digit',month:'long',year:'numeric'})}</div>
+</div>
+<div style="text-align:center;padding:16px;border-top:1px solid #ccc;margin-top:20px">
+  <button onclick="window.print()" style="background:#1a5c38;color:#fff;padding:10px 28px;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-right:10px">🖨️ Cetak / Simpan PDF</button>
+  <button onclick="window.close()" style="background:#555;color:#fff;padding:10px 20px;border:none;border-radius:6px;font-size:14px;cursor:pointer">Tutup</button>
+</div></body></html>`);
+  w.document.close();
+}
+function cetakBorangUmum(subId){
+  const s=STATE.subs.find(x=>x.id===subId);
+  if(s)cetakBorangData(s.no_borang||s.noBorang,s.nama,s.data,null);
+}
+async function padamBorang(id){
+  if(!confirm(`Padam rekod pengemukaan ${id}?`))return;
+  try{
+    const res=await fetch(`/api/borang/${id}`,{method:'DELETE'});
+    if(!res.ok){const e=await res.json().catch(()=>({}));alert(e.error||'Gagal memadam rekod.');return}
+    STATE.subs=STATE.subs.filter(x=>x.id!==id);navigate('borang');
+  }catch{alert('Ralat sambungan. Semak pelayan.');}
+}
+
+// ── PROSEDUR ─────────────────────────────────────────────
+function renderProsedur(){
+  const steps=[
+    {no:1,ikon:'📋',tajuk:'Permohonan Seksyen 47',tag:'Seksyen 47 EUUKIJ 2003',c:'var(--b)',hurai:'Isteri memfailkan permohonan perceraian tanpa persetujuan suami di bawah Seksyen 47 Enakmen Undang-Undang Keluarga Islam (Negeri Johor) 2003.'},
+    {no:2,ikon:'🤝',tajuk:'Gagal Jawatankuasa Pendamai (JKP)',tag:'Pra-syarat Hakam',c:'#5c3292',hurai:'Proses JKP gagal mencapai perdamaian. Mahkamah mensabitkan shiqaq antara suami dan isteri.'},
+    {no:3,ikon:'⚖️',tajuk:'Sabitkan Shiqaq',tag:'Perintah Mahkamah',c:'var(--r)',hurai:'Mahkamah mensabitkan wujudnya shiqaq (perkelahian berterusan) yang menjejaskan kerukunan rumah tangga dan memerintahkan pelantikan Hakam.'},
+    {no:4,ikon:'👤',tajuk:'Pelantikan Hakam (Borang 1)',tag:'Borang 1 – Subk. 4(1) & 6(3)',c:'var(--h)',hurai:'Diutamakan Hakam Qarabah (saudara mara rapat). Jika gagal dalam 7 hari, Mahkamah lantik daripada Panel Hakam yang dilantik oleh Majlis Agama Islam Johor. Borang 4 (Wakalah) ditandatangani apabila Hakam menerima pelantikan.'},
+    {no:5,ikon:'📝',tajuk:'Perwakilan Kuasa Penuh (Borang 2 & 3)',tag:'Borang 2 & 3 – Subk. 6(1)',c:'var(--hl)',hurai:"Suami memberi wakalah kuasa penuh kepada Hakam Suami (Borang 2) dan isteri kepada Hakam Isteri (Borang 3) untuk perdamaian, talaq, atau khul'. Borang 4 digunakan jika wakalah am (tanpa kuasa penuh)."},
+    {no:6,ikon:'🏛️',tajuk:'Majlis Tahkim',tag:'Kaedah 10, 12, 22',c:'var(--g)',hurai:'Tempoh maksimum 30 hari dari tarikh pelantikan. Boleh dilanjutkan sehingga 60 hari. Tiada peguam syarie atau pihak lain dibenarkan hadir kecuali saudara mara (Kaedah 22). Hakam boleh menarik diri (Borang 7) atau dipecat oleh Mahkamah (Borang 8).'},
+    {no:7,ikon:'📄',tajuk:'Laporan Majlis Tahkim (Borang 9)',tag:'Borang 9 – Kaedah 15',c:'var(--a)',hurai:'Kedua-dua Hakam mengemukakan laporan bertulis kepada Mahkamah: perjalanan majlis, isu, punca shiqaq, dan cadangan keputusan (berdamai / talaq / khul\').'},
+    {no:8,ikon:'🔚',tajuk:'Keputusan Akhir — MUKTAMAD',tag:'Jadual Kedua – Kaedah 16 & 18',c:'var(--b)',hurai:"(a) Perdamaian – Perintah Rujuk. (b) Talaq – Sighah Talaq (Jadual Kedua), jika shiqaq dari suami/kedua pihak. (c) Khul' – Sighah Khul' (Jadual Kedua), jika shiqaq dari isteri. Kadar 'iwadh ditentukan oleh Hakam."},
+  ];
+  return`
+  <div class="note note-h">⚖️ <strong>Aliran Prosedur Hakam</strong> — Berdasarkan Seksyen 47–48 EUUKIJ 2003 & Kaedah-Kaedah Hakam (Negeri Johor) 2022.</div>
+  ${steps.map((s,i)=>`<div class="prosedur-step">
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div class="step-circle" style="background:${s.c}15;border-color:${s.c}">${s.ikon}</div>
+      ${i<steps.length-1?`<div style="width:2px;flex:1;background:var(--border);margin-top:4px;min-height:20px"></div>`:''}
+    </div>
+    <div class="step-body">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="font-size:11px;font-weight:700;color:${s.c}">Langkah ${s.no}</div>
+        <span style="background:${s.c}15;color:${s.c};font-size:10px;padding:2px 8px;border-radius:4px;font-weight:700">${s.tag}</span>
+      </div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:4px">${s.tajuk}</div>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6">${s.hurai}</div>
+    </div>
+  </div>`).join('')}
+  <div class="note note-r">⚠️ <strong>Kaedah 18 – Keputusan Muktamad:</strong> Perceraian yang diputuskan dalam Majlis Tahkim adalah <strong>MUKTAMAD</strong> dan tiada rayuan dibenarkan.</div>`;
+}
+
+// ── ETIKA ─────────────────────────────────────────────────
+let openAcc=null;
+function renderEtika(){
+  const items=[
+    {tajuk:'Kelayakan Hakam (Kaedah 8)',ikon:'📜',c:'var(--b)',isi:['Muslim, berakal sempurna, baligh, dan berkeperibadian mulia','Mempunyai pengetahuan asas dalam Hukum Syarak dan hal kekeluargaan','Hakam Qarabah: saudara mara rapat (nasab/semenda) lelaki atau perempuan','Hakam Panel: dilantik oleh Majlis Agama Islam Johor atas cadangan Jawatankuasa Hakam','Peguam Syarie boleh jadi Hakam – syarat tidak pernah terlibat dalam prosiding berkaitan']},
+    {tajuk:'Kewajipan Hakam (Kaedah 25)',ikon:'✅',c:'var(--h)',isi:['Berlaku adil kepada kedua-dua pihak tanpa memihak','Berusaha ke arah perdamaian (islah) terlebih dahulu','Tidak meninggalkan Majlis Tahkim tanpa alasan yang munasabah','Mengemukakan laporan bertulis kepada Mahkamah (Borang 9) selepas Majlis','Mematuhi setiap arahan Mahkamah dan Hukum Syarak']},
+    {tajuk:'Larangan Hakam (Kaedah 25)',ikon:'🚫',c:'var(--r)',isi:['TIDAK boleh bertindak sebagai saksi/penasihat dalam kes yang pernah dikendalikan','TIDAK boleh mewakili suami/isteri dalam kes-kes lain yang bersangkutan','TIDAK boleh berlaku berat sebelah atau dipengaruhi pihak luar','TIDAK boleh menerima sebarang hadiah, bayaran, atau faedah di luar kelayakannya']},
+    {tajuk:'Tempoh & Tatacara (Kaedah 10, 16, 22, 30)',ikon:'📅',c:'var(--a)',isi:['Tempoh maksimum: 30 hari dari tarikh perintah pelantikan','Boleh dilanjutkan: tidak melebihi 60 hari dari tarikh pelanjutan','Tiada peguam syarie atau pihak lain hadir kecuali saudara mara (Kaedah 22)','Majlis Tahkim boleh diadakan di Mahkamah atau tempat lain yang sesuai (Kaedah 30)']},
+    {tajuk:"Jenis Keputusan (Kaedah 12, 15, 18)",ikon:'⚖️',c:'#5c3292',isi:['PERDAMAIAN – Laporan kepada Mahkamah untuk perintah rujuk (Islah)','TALAQ (Jadual Kedua – Sighah Talaq) – Shiqaq dari suami/kedua pihak → Talaq Ba\'in Sughra',"KHUL' (Jadual Kedua – Sighah Khul') – Shiqaq dari isteri → kadar 'iwadh ditentukan Hakam",'Keputusan adalah MUKTAMAD – tiada rayuan dibenarkan (Kaedah 18)']},
+    {tajuk:'Elaun Panel Hakam (Kaedah 32)',ikon:'💰',c:'var(--g)',isi:['Majlis Agama Islam Johor boleh membayar elaun kepada Panel Hakam yang dilantik','Kadar elaun sebagaimana ditetapkan dalam Jadual Ketiga Kaedah-Kaedah Hakam (Negeri Johor) 2022','Elaun dibayar bagi setiap sesi Majlis Tahkim yang dihadiri oleh Panel Hakam','Hakam Qarabah (saudara mara) tidak layak menerima elaun daripada Majlis']},
+    {tajuk:'Aduan & Siasatan (Kaedah 26–29)',ikon:'📮',c:'var(--r)',isi:['Aduan terhadap Panel Hakam boleh dikemukakan kepada Jawatankuasa Hakam JKSNJ','Jawatankuasa menyiasat dan meminta penjelasan bertulis daripada Hakam','Jawatankuasa boleh mengesyorkan pembatalan pelantikan Panel Hakam kepada Majlis','Jawatankuasa dipengerusikan oleh Ketua Hakim Syarie dengan ahli-ahli berkelayakan']},
+  ];
+  return`
+  <div class="note note-h">📖 <strong>Etika & Kaedah Hakam</strong> — Kaedah-Kaedah Hakam (Negeri Johor) 2022: Kaedah 8, 12, 14–16, 18, 22, 25–32.</div>
+  ${items.map((it,i)=>`<div class="acc-item" id="acc-${i}">
+    <div class="acc-hdr" style="border-left-color:${it.c}" onclick="toggleAcc(${i})">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:20px">${it.ikon}</span>
+        <span style="font-size:13px;font-weight:700;color:${it.c}">${it.tajuk}</span>
+      </div>
+      <span id="arr-${i}" style="color:var(--muted);font-size:14px">▼</span>
+    </div>
+    <div class="acc-body" id="body-${i}">
+      ${it.isi.map(s=>`<div style="display:flex;gap:8px;margin-bottom:8px"><div class="acc-dot" style="background:${it.c}"></div><div style="font-size:12px;line-height:1.6">${s}</div></div>`).join('')}
+    </div>
+  </div>`).join('')}`;
+}
+function toggleAcc(i){
+  const body=document.getElementById('body-'+i);
+  const arr=document.getElementById('arr-'+i);
+  if(!body||!arr)return;
+  const isOpen=body.classList.contains('open');
+  document.querySelectorAll('.acc-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('[id^="arr-"]').forEach(a=>a.textContent='▼');
+  if(!isOpen){body.classList.add('open');arr.textContent='▲'}
+}
+
+// ── UTILITIES ─────────────────────────────────────────────
+function closeModal(id){const el=document.getElementById(id);if(el)el.remove()}
+function closeAllModals(){document.querySelectorAll('.modal-overlay').forEach(m=>m.remove())}
+function bindEvents(){}
+
+// ── SESSION RESTORE ───────────────────────────────────────
+(async function(){
+  try{
+    const res=await fetch('/api/auth/me');
+    if(res.ok){const {user}=await res.json();await initApp(user);}
+  }catch{}
+})();
+
+</script>
+</body>
+</html>
+HTMLEOF

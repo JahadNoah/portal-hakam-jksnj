@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Development Report – Portal Hakam JKSNJ</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;color:#1a1a1a;background:#fff;font-size:11pt;line-height:1.6}
+  .page{max-width:210mm;margin:0 auto;padding:18mm 20mm}
+
+  /* Header */
+  .cover{text-align:center;padding:40px 0 32px;border-bottom:3px solid #1a5c38;margin-bottom:32px}
+  .cover .logo{font-size:40px;margin-bottom:12px}
+  .cover .agency{font-size:9pt;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .cover h1{font-size:18pt;font-weight:800;color:#0d3320;line-height:1.4;margin-bottom:6px}
+  .cover .subtitle{font-size:11pt;color:#2e7d52;margin-bottom:20px}
+  .cover .meta{display:flex;justify-content:center;gap:40px;font-size:9.5pt;color:#555}
+  .cover .meta span strong{color:#1a1a1a}
+
+  /* Section */
+  h2{font-size:13pt;font-weight:800;color:#0d3320;margin:28px 0 10px;padding-bottom:5px;border-bottom:2px solid #e0d9cc}
+  h3{font-size:11pt;font-weight:700;color:#1a5c38;margin:16px 0 6px}
+  p{margin-bottom:8px;color:#333}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:10pt;margin-bottom:14px}
+  th{background:#1a5c38;color:#fff;padding:7px 10px;text-align:left;font-weight:700;font-size:9.5pt}
+  td{padding:7px 10px;border-bottom:1px solid #e0d9cc;vertical-align:top}
+  tr:nth-child(even) td{background:#f8f6f2}
+
+  /* Badge */
+  .badge{display:inline-block;padding:2px 9px;border-radius:12px;font-size:8.5pt;font-weight:700}
+  .done{background:#e8f5ee;color:#1a5c38}
+  .pending{background:#fef3e2;color:#b8892a}
+  .blocked{background:#fdecea;color:#c0392b}
+
+  /* Code block */
+  pre{background:#f4f1eb;border:1px solid #cdc4ae;border-radius:6px;padding:10px 14px;font-size:9.5pt;font-family:'Courier New',monospace;margin-bottom:12px;overflow-x:auto}
+  code{font-family:'Courier New',monospace;font-size:9.5pt;background:#f4f1eb;padding:1px 5px;border-radius:3px}
+
+  /* Note box */
+  .note{background:#e8f5ee;border-left:4px solid #1a5c38;padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:10pt}
+  .note-warn{background:#fef3e2;border-left-color:#b8892a}
+  .note-info{background:#e8f0fb;border-left-color:#1b4f8a}
+
+  /* List */
+  ul,ol{padding-left:20px;margin-bottom:10px}
+  li{margin-bottom:4px;font-size:10.5pt;color:#333}
+
+  /* Architecture diagram */
+  .arch{border:1px solid #cdc4ae;border-radius:8px;padding:16px;background:#fafaf8;margin-bottom:14px;font-size:9.5pt;font-family:'Courier New',monospace;line-height:1.8}
+
+  /* Footer */
+  .footer{margin-top:40px;padding-top:14px;border-top:1px solid #cdc4ae;font-size:9pt;color:#888;display:flex;justify-content:space-between}
+
+  /* Print */
+  @media print{
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .no-print{display:none}
+    .page{padding:12mm 15mm}
+    h2{page-break-before:auto}
+    table{page-break-inside:avoid}
+  }
+
+  /* Print button */
+  .print-btn{position:fixed;bottom:28px;right:28px;background:#1a5c38;color:#fff;border:none;padding:12px 24px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+  .print-btn:hover{background:#0d3320}
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨️ Save as PDF</button>
+
+<div class="page">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="logo">⚖️</div>
+    <div class="agency">Jabatan Kehakiman Syariah Negeri Johor</div>
+    <h1>Portal Hakam JKSNJ<br>Development Progress Report</h1>
+    <div class="subtitle">Kaedah-Kaedah Hakam (Negeri Johor) 2022</div>
+    <div class="meta">
+      <span><strong>Date:</strong> 23 April 2026</span>
+      <span><strong>Phase:</strong> Phase 2 – Local Backend</span>
+      <span><strong>Status:</strong> Demo Ready</span>
+    </div>
+  </div>
+
+  <!-- 1. OVERVIEW -->
+  <h2>1. Project Overview</h2>
+  <p>The Portal Hakam JKSNJ is a web-based case management system designed to digitise and streamline the arbitration process (<em>Hakam</em>) under the <strong>Kaedah-Kaedah Hakam (Negeri Johor) 2022</strong>. The system manages case registration, session reports, and all 9 statutory forms (Borang 1–9) under Jadual Pertama.</p>
+  <p>This report documents the development work completed during the current sprint, covering the migration from a browser-local prototype to a fully functional local backend system.</p>
+
+  <!-- 2. WHAT WAS BUILT -->
+  <h2>2. Work Completed</h2>
+
+  <h3>2.1 Local Backend Server</h3>
+  <p>A production-capable local server was built using <strong>Node.js + Express.js</strong> with a <strong>SQLite</strong> database. The entire backend lives in a single file (<code>server.js</code>) for simplicity and easy maintenance.</p>
+
+  <table>
+    <thead><tr><th>Component</th><th>Technology</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td>HTTP Server</td><td>Express.js 4.x</td><td>Handles all API requests and serves the frontend</td></tr>
+      <tr><td>Database</td><td>SQLite (better-sqlite3)</td><td>Persistent storage — single file, no installation needed</td></tr>
+      <tr><td>Authentication</td><td>express-session + bcryptjs</td><td>Session-based login with hashed passwords</td></tr>
+      <tr><td>File Uploads</td><td>multer</td><td>Handles PDF/image attachments for Laporan &amp; Borang</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.2 Database Schema</h3>
+  <p>Four tables were designed and implemented:</p>
+  <table>
+    <thead><tr><th>Table</th><th>Key Fields</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><code>users</code></td><td>id, nama, kata (hashed), jawatan, peranan</td><td>Roles: admin, pendaftar, hakam</td></tr>
+      <tr><td><code>kes</code></td><td>id, data (JSON), created_at, updated_at</td><td>Full case object stored as JSON blob</td></tr>
+      <tr><td><code>laporan</code></td><td>id, kes_id, data (JSON), created_at, updated_at</td><td>Linked to kes; supports file attachment</td></tr>
+      <tr><td><code>borang_submissions</code></td><td>id, borang, kes_id, data (JSON), fail, tarikh, user_nama</td><td>Tracks all Borang 1–9 submissions</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.3 REST API Endpoints</h3>
+  <table>
+    <thead><tr><th>Method</th><th>Route</th><th>Access</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>POST</td><td>/api/auth/login</td><td>Public</td><td>Login, returns session cookie</td></tr>
+      <tr><td>POST</td><td>/api/auth/logout</td><td>All</td><td>Destroys session</td></tr>
+      <tr><td>GET</td><td>/api/auth/me</td><td>All</td><td>Session restore on page reload</td></tr>
+      <tr><td>GET</td><td>/api/kes</td><td>All roles</td><td>List all cases</td></tr>
+      <tr><td>POST</td><td>/api/kes</td><td>admin, pendaftar</td><td>Create new case</td></tr>
+      <tr><td>PUT</td><td>/api/kes/:id</td><td>admin, pendaftar</td><td>Update case</td></tr>
+      <tr><td>DELETE</td><td>/api/kes/:id</td><td>admin only</td><td>Delete case</td></tr>
+      <tr><td>GET</td><td>/api/laporan</td><td>All roles</td><td>List all reports</td></tr>
+      <tr><td>POST</td><td>/api/laporan</td><td>admin, pendaftar</td><td>Create report (+ file upload)</td></tr>
+      <tr><td>PUT</td><td>/api/laporan/:id</td><td>admin, pendaftar</td><td>Update report (+ file upload)</td></tr>
+      <tr><td>DELETE</td><td>/api/laporan/:id</td><td>admin only</td><td>Delete report</td></tr>
+      <tr><td>GET</td><td>/api/borang</td><td>All roles</td><td>List borang submissions</td></tr>
+      <tr><td>POST</td><td>/api/borang</td><td>All roles</td><td>Submit form (+ file upload)</td></tr>
+      <tr><td>DELETE</td><td>/api/borang/:id</td><td>admin only</td><td>Delete submission record</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 Role-Based Access Control</h3>
+  <p>Permissions are enforced <strong>server-side</strong> on every request, not just in the UI.</p>
+  <table>
+    <thead><tr><th>Action</th><th>Admin</th><th>Pendaftar</th><th>Hakam</th></tr></thead>
+    <tbody>
+      <tr><td>View all records</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Create / edit Kes</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Create / edit Laporan</td><td>✅</td><td>✅</td><td>❌</td></tr>
+      <tr><td>Submit Borang 1–9</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      <tr><td>Delete any record</td><td>✅</td><td>❌</td><td>❌</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.5 Frontend Migration (localStorage → API)</h3>
+  <p>The original prototype stored data in <code>localStorage</code> (browser-only). All data operations were migrated to call the backend API:</p>
+  <ul>
+    <li>Login now calls <code>POST /api/auth/login</code> with bcrypt password verification</li>
+    <li>Session is automatically restored on page refresh via <code>GET /api/auth/me</code></li>
+    <li>All CRUD operations (create, read, update, delete) use <code>fetch()</code> to the API</li>
+    <li>Multiple users on different computers now see the same live data</li>
+  </ul>
+
+  <h3>2.6 File Upload (Laporan Tahkim &amp; Borang)</h3>
+  <p>Both the Laporan Tahkim form and all Borang 1–9 forms now support document attachments:</p>
+  <ul>
+    <li>Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG</li>
+    <li>Maximum file size: 10 MB per upload</li>
+    <li>Files stored in <code>uploads/</code> folder on the server</li>
+    <li>Attachment link shown in Laporan list view for easy retrieval</li>
+  </ul>
+
+  <!-- 3. SYSTEM ARCHITECTURE -->
+  <h2>3. System Architecture</h2>
+  <div class="arch">
+Browser (public/index.html)
+    │
+    │  fetch() API calls over HTTP
+    │
+    ▼
+server.js  (Node.js + Express)
+    ├── /api/auth/*      ← Session management
+    ├── /api/kes/*       ← Case CRUD
+    ├── /api/laporan/*   ← Report CRUD + file upload
+    ├── /api/borang/*    ← Form submissions + file upload
+    ├── /uploads/        ← Static file serving
+    └── /public/         ← Serves index.html
+    │
+    ▼
+data/jksnj.db  (SQLite)
+    ├── users
+    ├── kes
+    ├── laporan
+    └── borang_submissions
+  </div>
+
+  <h3>Project File Structure</h3>
+  <div class="arch">
+System Salman/
+├── server.js          ← Backend (all routes, auth, DB)
+├── package.json       ← Dependencies
+├── README.md          ← Technical documentation
+├── SETUP.md           ← End-user setup guide
+├── public/
+│   └── index.html     ← Frontend SPA
+├── data/
+│   └── jksnj.db      ← SQLite database (auto-created)
+└── uploads/           ← Uploaded attachments (auto-created)
+  </div>
+
+  <!-- 4. HOW TO RUN -->
+  <h2>4. How to Run</h2>
+  <div class="note">
+    <strong>Requirement:</strong> Node.js version 18 or above must be installed. Download from nodejs.org.
+  </div>
+  <pre>
+# Step 1 — Install dependencies (first time only)
+npm install
+
+# Step 2 — Start the server
+npm start
+
+# Step 3 — Open browser
+http://localhost:3000
+  </pre>
+
+  <h3>Demo Accounts</h3>
+  <table>
+    <thead><tr><th>Username</th><th>Password</th><th>Role</th><th>Access Level</th></tr></thead>
+    <tbody>
+      <tr><td><code>admin</code></td><td>jksnj2025</td><td>Pentadbir</td><td>Full access including delete</td></tr>
+      <tr><td><code>daftar</code></td><td>daftar123</td><td>Pendaftar</td><td>Create and edit records</td></tr>
+      <tr><td><code>hakam1</code></td><td>hakam123</td><td>Panel Hakam</td><td>View and submit forms only</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 5. PENDING ITEMS -->
+  <h2>5. Pending Items</h2>
+  <table>
+    <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Blocker</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Borang 1–9 input fields — update each form to match exact official form requirements</td>
+        <td><span class="badge blocked">Blocked</span></td>
+        <td>Waiting for official form documents (PDF/Word) from JKSNJ</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Admin vs user role confirmation — clarify who fills which form</td>
+        <td><span class="badge pending">Pending</span></td>
+        <td>Confirmation needed from supervisor</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>UI theme — align visual design with official JKSNJ website</td>
+        <td><span class="badge pending">Pending</span></td>
+        <td>Branding guide / approval needed</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>User management UI — add/change user accounts without editing server.js</td>
+        <td><span class="badge pending">Pending</span></td>
+        <td>Scope to be confirmed</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>HTTPS / SSL setup for internet or wider LAN deployment</td>
+        <td><span class="badge pending">Pending</span></td>
+        <td>Required only if moving beyond local network</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note note-warn">
+    <strong>Note:</strong> Items 1 and 2 are dependent on input from the client/supervisor. Development can proceed on items 3–5 independently.
+  </div>
+
+  <!-- 6. KNOWN LIMITATIONS -->
+  <h2>6. Known Limitations (Demo Scope)</h2>
+  <ul>
+    <li>Passwords for demo accounts are visible in <code>server.js</code> — should be changed before any real use</li>
+    <li>No HTTPS — suitable for local/LAN only; requires SSL certificate for internet deployment</li>
+    <li>No automated backup — <code>data/jksnj.db</code> and <code>uploads/</code> should be backed up manually</li>
+    <li>No user management UI — account changes require editing <code>server.js</code> and restarting</li>
+    <li>Borang 1–9 fields are approximations — pending official form specifications</li>
+  </ul>
+
+  <!-- 7. FUTURE RECOMMENDATIONS -->
+  <h2>7. Future Recommendations (If Moving to Production)</h2>
+  <ul>
+    <li><strong>Cloud deployment</strong> — Host on a server or cloud VM accessible to all JKSNJ branches</li>
+    <li><strong>HTTPS</strong> — Required for any internet-facing deployment (Let's Encrypt for free SSL)</li>
+    <li><strong>Automated backups</strong> — Schedule daily backup of <code>jksnj.db</code> to an external drive or cloud storage</li>
+    <li><strong>Audit log</strong> — Record who created/modified/deleted each record (important for court records)</li>
+    <li><strong>MyKad / SSO integration</strong> — Authentication via government identity system</li>
+    <li><strong>Email notifications</strong> — Alert Hakam when approaching 30-day deadline</li>
+  </ul>
+
+  <div class="footer">
+    <span>Portal Hakam JKSNJ — Development Progress Report</span>
+    <span>Generated: 23 April 2026</span>
+  </div>
+
+</div>
+</body>
+</html>

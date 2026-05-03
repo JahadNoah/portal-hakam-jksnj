@@ -1,0 +1,9 @@
+node_modules/
+data/
+uploads/
+
+# macOS junk
+.DS_Store
+._*
+._.DS_Store
+*.DS_Store
