@@ -127,12 +127,17 @@ tr:hover td{background:#fafaf8}
 .demo-row{font-size:12px;color:var(--muted);display:flex;gap:8px;margin-bottom:4px;cursor:pointer;align-items:center}
 .demo-row:hover{color:var(--h)}
 .demo-id{color:var(--h);font-weight:700}
+.print-area{position:fixed;left:-99999px;top:0}
 @media print{
+  @page{size:A4;margin:0}
+  html,body{margin:0;padding:0;background:#fff}
   #sidebar,#topbar,.no-print{display:none!important}
   #main{display:block}
   #content{overflow:visible;padding:0}
   .modal-overlay{position:static;background:none;padding:0}
   .modal{max-height:none;box-shadow:none}
+  body.printing > *:not(.print-area){display:none!important}
+  body.printing .print-area{display:block!important;position:static!important;left:auto!important;width:100%!important}
 }
 </style>
 </head>
@@ -1076,43 +1081,179 @@ function cetakBorangIsi(){
   cetakBorangData(b.no,b.nama,data,STATE.borangKes);
 }
 function cetakBorangData(noBorang,namaBorang,data,kes){
-  const w=window.open('','_blank','width=900,height=700');
-  if(!w){alert('Sila benarkan popup.');return}
-  const rows=Object.entries(data).filter(([k,v])=>v).map(([k,v])=>`<div class="fr"><div class="f"><label>${k.replace(/_/g,' ').replace(/([A-Z])/g,' $1')}:</label><div class="line">${v}</div></div></div>`).join('');
-  const kesInfo=kes?`<div style="background:#e8f5ee;padding:8px 12px;border-radius:6px;font-size:10pt;margin-bottom:14px">Kes: <strong>${kes.id}</strong> | Saman: ${kes.noSaman} | ${kes.mahkamah}</div>`:'';
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${noBorang}</title>
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Times New Roman',serif;color:#000;background:#fff;font-size:12pt}
-.page{max-width:210mm;margin:0 auto;padding:20mm}.header{text-align:center;border-bottom:2px solid #1a5c38;padding-bottom:14px;margin-bottom:18px}
-.jawi{font-size:22pt;font-family:'Traditional Arabic',serif;direction:rtl;margin-bottom:6px;color:#1a5c38}
-h1{font-size:13pt;font-weight:bold;color:#0d3320;line-height:1.5}h2{font-size:11pt;color:#333;margin-top:4px}
-h3{font-size:14pt;font-weight:bold;color:#1a5c38;margin-top:8px;text-decoration:underline}
-.kaedah{font-size:10pt;color:#555;margin-top:4px;font-style:italic}
-.fr{margin-bottom:8px}.f{}.f label{font-size:10pt;font-weight:bold;display:block;margin-bottom:2px}
-.line{border-bottom:1px solid #000;min-height:22px;padding:2px 4px;font-size:11pt;background:#fafff8}
-.tt{display:flex;justify-content:space-between;margin-top:30px}.ttb{text-align:center}
-.ttl{border-bottom:1px solid #000;width:180px;margin:0 auto 4px;height:30px}.ttx{font-size:10pt}
-.ref{font-size:9pt;color:#555;text-align:right;margin-top:20px;padding-top:8px;border-top:1px solid #ccc}
-@media print{button{display:none}body{-webkit-print-color-adjust:exact}}</style></head>
-<body><div class="page">
-<div class="header">
-  <div class="jawi">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
-  <h1>JABATAN KEHAKIMAN SYARIAH NEGERI JOHOR</h1>
-  <h2>Mahkamah Syariah Negeri Johor</h2>
-  <h3>${noBorang} – ${namaBorang}</h3>
-  <div class="kaedah">Kaedah-Kaedah Hakam (Negeri Johor) 2022 – Jadual Pertama</div>
-</div>
-${kesInfo}${rows||'<p style="color:#999;font-style:italic">Borang diisi secara manual.</p>'}
-<div class="tt">
-  <div class="ttb"><div class="ttl"></div><div class="ttx">Tandatangan Pemohon<br>Tarikh: _______________</div></div>
-  <div class="ttb"><div class="ttl"></div><div class="ttx">Disahkan Hakim/Pendaftar<br>Tarikh: _______________</div></div>
-</div>
-<div class="ref">Dicetak melalui Sistem Portal Hakam JKSNJ | ${new Date().toLocaleDateString('ms-MY',{day:'2-digit',month:'long',year:'numeric'})}</div>
-</div>
-<div style="text-align:center;padding:16px;border-top:1px solid #ccc;margin-top:20px">
-  <button onclick="window.print()" style="background:#1a5c38;color:#fff;padding:10px 28px;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-right:10px">🖨️ Cetak / Simpan PDF</button>
-  <button onclick="window.close()" style="background:#555;color:#fff;padding:10px 20px;border:none;border-radius:6px;font-size:14px;cursor:pointer">Tutup</button>
-</div></body></html>`);
-  w.document.close();
+  const d=data||{};
+  const months=['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+  const splitDate=(s)=>{if(!s)return['','',''];const x=new Date(s);if(isNaN(x))return['','',''];return[String(x.getDate()).padStart(2,'0'),months[x.getMonth()],String(x.getFullYear()).slice(2)]};
+  const fmtFull=(s)=>{const[h,b,y]=splitDate(s);return h?`${h} ${b} 20${y}`:''};
+  const F=(val,dots='………………………………')=>val?`<u style="font-weight:bold">${val}</u>`:`<span style="letter-spacing:1px;color:#888">${dots}</span>`;
+  const Btk=(s)=>{const[h,b,y]=splitDate(s);return `Bertarikh pada ${F(h,'…………')} haribulan ${F(b,'……………')} 20${F(y,'……')}.`};
+  const tajuk=(borang,sub,judul,jadual='JADUAL PERTAMA')=>`<div style="text-align:center;margin-bottom:22pt">
+    <div>${jadual}</div>
+    <div style="margin-top:8pt">${borang}</div>
+    <div style="margin-top:8pt;font-style:italic">[${sub}]</div>
+    <div style="margin-top:14pt">KAEDAH-KAEDAH HAKAM (NEGERI JOHOR) 2022</div>
+    <div style="margin-top:2pt">${judul}</div>
+    <div style="margin-top:14pt;font-style:italic">(Tajuk Am)</div>
+  </div>`;
+  const sig=(label)=>`<div style="text-align:right;margin-top:18pt;margin-right:40pt"><div style="display:inline-block;text-align:center;width:200pt"><div style="border-bottom:1px dotted #000;height:18pt"></div><div style="margin-top:2pt">${label}</div></div></div>`;
+  const meteraiHakim=(withDihadapan)=>`${withDihadapan?'<div style="margin-top:18pt">Di hadapan saya,</div>':''}
+    <table style="width:100%;margin-top:${withDihadapan?'4pt':'24pt'};border-collapse:collapse"><tr>
+      <td style="width:40%;padding-left:8pt;vertical-align:bottom">(Meterai)</td>
+      <td style="width:60%;text-align:right;padding-right:40pt"><div style="display:inline-block;text-align:center;width:200pt"><div style="border-bottom:1px dotted #000;height:18pt"></div><div style="margin-top:2pt">Hakim</div></div></td>
+    </tr></table>`;
+
+  let header='',body='';
+  if(noBorang==='Borang 1'){
+    header=tajuk('BORANG 1','Subkaedah 4(1) dan 6(3)','PERLANTIKAN HAKAM SUAMI/ISTERI OLEH HAKIM');
+    body=`
+      <p>Ambil perhatian bahawa Mahkamah dengan ini melantik—</p>
+      <p style="margin-left:24pt;margin-top:8pt">(1) ${F(d.hsuami)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphsuami,'………………………')})</span> sebagai Hakam bagi pihak <strong>suami</strong> ${F(d.suami)} <span style="color:#666">(Nama suami, No. Kad Pengenalan: ${F(d.kpsuami,'………………………')})</span>; dan</p>
+      <p style="margin-left:24pt;margin-top:6pt">(2) ${F(d.histeri)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphisteri,'………………………')})</span> sebagai Hakam bagi pihak <strong>isteri</strong> ${F(d.isteri)} <span style="color:#666">(Nama isteri, No. Kad Pengenalan: ${F(d.kpisteri,'………………………')})</span>,</p>
+      <p style="margin-top:8pt">dalam Saman No. ${F(d.saman)} di Mahkamah ${F(d.mahkamah)} mulai (tarikh) ${F(fmtFull(d.tarikh))} hingga dibatalkan oleh Mahkamah kemudiannya.</p>
+      <p style="margin-top:14pt">${Btk(d.tarikh)}</p>
+      ${meteraiHakim(false)}`;
+  } else if(noBorang==='Borang 2'){
+    header=tajuk('BORANG 2','Subkaedah 6(1) dan 12(2)(c)','NOTIS PERWAKILAN KUASA PENUH OLEH SUAMI');
+    body=`
+      <p>Saya ${F(d.nama)} <span style="color:#666">(Nama, No. Kad Pengenalan Suami: ${F(d.kp,'………………………')})</span> dengan ini melantik dan mewakilkan kepada ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> sebagai Hakam bagi pihak saya dalam Saman No. ${F(d.saman)} untuk perdamaian suami isteri atau melafazkan satu talaq atau <em>khul'</em> terhadap isteri saya ${F(d.isteri)} <span style="color:#666">(Nama, No. Kad Pengenalan Isteri: ${F(d.kpisteri,'………………………')})</span> di hadapan Mahkamah ${F(d.mahkamah)} mulai (tarikh) ${F(fmtFull(d.tarikh))} hingga dibatalkan oleh saya atau Mahkamah</p>
+      <p style="margin-top:14pt">${Btk(d.tarikhborang)}</p>
+      ${sig('Suami'+(d.nama?` — ${d.nama}`:''))}
+      <p style="margin-top:18pt">Saya ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> dengan ini menerima perlantikan yang tersebut di atas.</p>
+      <p style="margin-top:14pt">${Btk(d.tarikhterima)}</p>
+      ${sig('Hakam'+(d.hakam?` — ${d.hakam}`:''))}
+      ${meteraiHakim(true)}`;
+  } else if(noBorang==='Borang 3'){
+    header=tajuk('BORANG 3','Subkaedah 6(1) dan 12(2)(c)','NOTIS PERWAKILAN KUASA PENUH OLEH ISTERI');
+    body=`
+      <p>Saya ${F(d.nama)} <span style="color:#666">(Nama, No. Kad Pengenalan Isteri: ${F(d.kp,'………………………')})</span> dengan ini mewakilkan dengan kuasa penuh kepada ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> sebagai Hakam bagi pihak saya dalam Saman No. ${F(d.saman)} untuk menerima *perdamaian suami isteri atau lafaz talaq atau <em>khul'</em> Hakam suami saya ${F(d.hsuami)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam pihak suami: ${F(d.kphsuami,'………………………')})</span> di hadapan Mahkamah ${F(d.mahkamah)} mulai (tarikh) ${F(fmtFull(d.tarikh))} hingga dibatalkan oleh saya atau Mahkamah</p>
+      <p style="margin-top:14pt">${Btk(d.tarikhborang)}</p>
+      ${sig('Isteri'+(d.nama?` — ${d.nama}`:''))}
+      <p style="margin-top:18pt">Saya ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> dengan ini menerima pelantikan yang tersebut di atas.</p>
+      <p style="margin-top:14pt">${Btk(d.tarikhterima)}</p>
+      ${sig('Hakam'+(d.hakam?` — ${d.hakam}`:''))}
+      ${meteraiHakim(true)}`;
+  } else if(noBorang==='Borang 4'){
+    const pihak=d.pihak||'Suami atau Isteri';
+    header=tajuk('BORANG 4','Subkaedah 6(2)','WAKALAH DAN PENERIMAAN HAKAM');
+    body=`
+      <p>Saya ${F(d.nama)} <span style="color:#666">(Nama, No. Kad Pengenalan ${pihak}: ${F(d.kp,'………………………')})</span> dengan ini melantik dan mewakilkan kepada ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> sebagai Hakam bagi pihak saya dalam Saman No. ${F(d.saman)} di Mahkamah ${F(d.mahkamah)} mulai (tarikh) ${F(fmtFull(d.tarikh))} hingga dibatalkan oleh saya atau Mahkamah</p>
+      <p style="margin-top:14pt">${Btk(d.tarikhborang)}</p>
+      ${sig((d.pihak||'Suami atau isteri')+(d.nama?` — ${d.nama}`:''))}
+      <p style="margin-top:18pt">Saya ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> dengan ini menerima pelantikan yang tersebut di atas.</p>
+      <p style="margin-top:14pt">${Btk(d.tarikhterima)}</p>
+      ${sig('Hakam'+(d.hakam?` — ${d.hakam}`:''))}
+      ${meteraiHakim(true)}`;
+  } else if(noBorang==='Borang 7'){
+    const pihak=d.pihak||'suami/isteri';
+    header=tajuk('BORANG 7','Subkaedah 12(4)(d) dan 19(b)','NOTIS PENARIKAN DIRI HAKAM');
+    body=`
+      <p>Kepada Hakim,</p>
+      <p style="margin-top:12pt">Ambil perhatian bahawa saya ${F(d.hakam)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam: ${F(d.kphakam,'………………………')})</span> dengan ini menarik diri dan terhenti menjadi Hakam yang mewakili *${pihak.toLowerCase()} ${F(d.nama)} <span style="color:#666">(Nama, No. Kad Pengenalan ${d.pihak||'Suami atau Isteri'}: ${F(d.kp,'………………………')})</span> yang tersebut dalam prosiding yang tersebut di atas, berkuat kuasa pada tarikh notis ini.</p>
+      <p style="margin-top:14pt">${Btk(d.tarikh)}</p>
+      ${sig('Hakam'+(d.hakam?` — ${d.hakam}`:''))}
+      ${meteraiHakim(true)}`;
+  } else if(noBorang==='Borang 8'){
+    header=tajuk('BORANG 8','Subkaedah 12(4)','NOTIS PEMECATAN HAKAM');
+    body=`
+      <p>Ambil perhatian bahawa Mahkamah dengan ini memecat dan membatalkan pelantikan Hakam seperti yang berikut:</p>
+      <p style="margin-left:24pt;margin-top:12pt">(1) ${F(d.hsuami)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam Suami: ${F(d.kphsuami,'………………………')})</span> — Hakam Suami</p>
+      <p style="margin-left:24pt;margin-top:6pt">(2) ${F(d.histeri)} <span style="color:#666">(Nama, No. Kad Pengenalan Hakam Isteri: ${F(d.kphisteri,'………………………')})</span> — Hakam Isteri</p>
+      <p style="margin-top:14pt">${Btk(d.tarikh)}</p>
+      ${meteraiHakim(false)}`;
+  } else if(noBorang==='Borang 9'){
+    const cad=d.cadangan||'';
+    const a=cad?'dapat':'*dapat/tidak dapat';
+    const c=cad?(cad.includes('Perdamaian')?'berdamai':`bercerai secara *${cad==='Talaq'?'talaq':cad==="Khul'"?"khul'":"talaq/khul'"}`):"*berdamai/bercerai secara *talaq/khul'";
+    header=tajuk('BORANG 9','Kaedah 15','LAPORAN MAJLIS TAHKIM');
+    body=`
+      <p>Bahawa kami ${F(d.hsuami)} <span style="color:#666">(Nama Hakam Suami)</span> dan ${F(d.histeri)} <span style="color:#666">(Nama Hakam Isteri)</span> pada akhir Majlis Tahkim yang diadakan pada (tarikh) ${F(fmtFull(d.tarikh))} di ${F(d.tempat,'…………………………')} <span style="color:#666">(Nama tempat)</span> dengan ini melaporkan kepada Mahkamah seperti yang berikut:</p>
+      <p style="margin-left:18pt;margin-top:8pt">(1) ${F(d.latar||'','………………………………………………………………………………')}</p>
+      <p style="margin-left:18pt;margin-top:6pt">(2) ${F(d.isu||'','………………………………………………………………………………')}</p>
+      <p style="margin-left:18pt;margin-top:6pt">(3) ${F(d.punca||'','………………………………………………………………………………')}</p>
+      <p style="margin-left:18pt;margin-top:6pt">(4) ${F(d.catatan||'','………………………………………………………………………………')}</p>
+      <p style="margin-left:18pt;margin-top:8pt">(5) Kami—</p>
+      <p style="margin-left:36pt">(a) ${a} mencapai persetujuan dalam Majlis Tahkim ini.</p>
+      <p style="margin-left:36pt">(b) berpendapat punca <em>shiqaq</em> adalah daripada *suami/isteri/suami dan isteri tidak/tidak dapat ditentukan;</p>
+      <p style="margin-left:36pt">(c) berpendapat suami dan isteri patut ${c}.</p>
+      <table style="width:100%;margin-top:24pt;border-collapse:collapse"><tr>
+        <td style="width:50%;text-align:center"><div style="border-bottom:1px dotted #000;height:18pt;width:170pt;margin:0 auto"></div><div style="margin-top:2pt">Hakam Suami${d.hsuami?` — ${d.hsuami}`:''}</div></td>
+        <td style="width:50%;text-align:center"><div style="border-bottom:1px dotted #000;height:18pt;width:170pt;margin:0 auto"></div><div style="margin-top:2pt">Hakam Isteri${d.histeri?` — ${d.histeri}`:''}</div></td>
+      </tr></table>
+      <p style="margin-top:16pt">${Btk(d.tarikh)}</p>`;
+  } else if(noBorang==='Jadual Kedua'){
+    const j=d.jenis||'talaq-prinsipal';
+    const hs=F(d.hsuami),sm=F(d.suami),hi=F(d.histeri),it=F(d.isteri);
+    const iw=d.iwadh?F(d.iwadh):F('','………………');
+    const ht=F(d.harta||'','………………………………');
+    const hi2=F(d.histeri,'……………………');
+    const hl=(active)=>active?'background:#fff8e1;border-left:3px solid #c79a30;padding:6pt 10pt;border-radius:3px':'';
+    const lab=(t)=>`<span style="font-style:normal;color:#666;font-size:9pt">${t}</span>`;
+    const v1=`<div style="${hl(j==='talaq-prinsipal')};margin-top:10pt">
+        <p>(1) <em>Sighah talaq</em> bagi Hakam yang mendapat kuasa penuh daripada prinsipal.${j==='talaq-prinsipal'?' <strong style="color:#a07020">[DIPILIH]</strong>':''}</p>
+        <p style="margin-left:18pt;margin-top:6pt">Lafaz Hakam suami:</p>
+        <p style="margin-left:18pt;font-style:italic">" Saya ${hs} ${lab('(Nama Hakam)')} dengan kuasa yang diberi oleh ${sm} ${lab('(Nama Suami)')} menceraikan ${it} ${lab('(Nama Isteri)')} dengan talaq satu."</p>
+      </div>`;
+    const v2=`<div style="${hl(j==='talaq-mahkamah')};margin-top:10pt">
+        <p>(2) <em>Sighah talaq</em> bagi Hakam yang diberi kuasa penuh oleh Mahkamah.${j==='talaq-mahkamah'?' <strong style="color:#a07020">[DIPILIH]</strong>':''}</p>
+        <p style="margin-left:18pt;margin-top:6pt">Lafaz Hakam suami:</p>
+        <p style="margin-left:18pt;font-style:italic">"Saya ${hs} ${lab('(Nama Hakam)')} dengan kuasa penuh yang diberi oleh Mahkamah, bagi pihak suami ${sm} ${lab('(Nama Suami)')}, menceraikan ${it} ${lab('(Nama Isteri)')} dengan talaq satu."</p>
+      </div>`;
+    const v3=`<div style="${hl(j==='khul-prinsipal')};margin-top:10pt">
+        <p>(3) <em>Sighah khul'</em> bagi Hakam yang mendapat kuasa penuh daripada prinsipal.${j==='khul-prinsipal'?' <strong style="color:#a07020">[DIPILIH]</strong>':''}</p>
+        <p style="margin-left:18pt;margin-top:6pt">(a) Lafaz <em>Ijab</em> Hakam suami:</p>
+        <p style="margin-left:36pt;font-style:italic">"Saya ${hs} ${lab('(Nama Hakam)')} dengan kuasa yang diberi oleh ${sm} ${lab('(Nama Suami)')} menceraikan ${it} ${lab('(Nama Isteri)')} dengan khul' sebanyak Ringgit Malaysia ${iw} ${lab('(jumlah)')} atau ${ht} ${lab('(harta lain atau manfaat yang bernilai)')}."</p>
+        <p style="margin-left:18pt;margin-top:6pt">(b) Lafaz tersebut hendaklah diterima (qabul) dengan serta-merta oleh Hakam isteri seperti yang berikut:</p>
+        <p style="margin-left:36pt;font-style:italic">"Saya ${hi2} ${lab('(Nama Hakam)')} terima khul' bagi pihak ${it} ${lab('(Nama Isteri)')} atas persetujuannya sebanyak Ringgit Malaysia ${iw} ${lab('(jumlah)')} atau ${ht} ${lab('(harta lain atau manfaat yang bernilai)')} yang tersebut."</p>
+      </div>`;
+    const v4=`<div style="${hl(j==='khul-mahkamah')};margin-top:10pt">
+        <p>(4) <em>Sighah khul'</em> bagi Hakam yang diberi kuasa penuh oleh Mahkamah.${j==='khul-mahkamah'?' <strong style="color:#a07020">[DIPILIH]</strong>':''}</p>
+        <p style="margin-left:18pt;margin-top:6pt">(a) Lafaz Hakam suami:</p>
+        <p style="margin-left:36pt;font-style:italic">"Saya ${hs} ${lab('(Nama Hakam)')} dengan kuasa penuh yang diberi oleh Mahkamah, bagi pihak ${sm} ${lab('(Nama Suami)')}, menceraikan ${it} ${lab('(Nama Isteri)')} dengan <em>khul'</em> sebanyak Ringgit Malaysia ${iw} ${lab('(jumlah)')} atau ${ht} ${lab('(harta lain atau manfaat yang bernilai)')}."</p>
+        <p style="margin-left:18pt;margin-top:6pt">(b) Lafaz Hakam bagi pihak isteri:</p>
+        <p style="margin-left:36pt;font-style:italic">"Saya ${hi2} ${lab('(Nama Hakam)')} sebagai Hakam bagi pihak ${it} ${lab('(Nama Isteri)')}, menerima khul' sebanyak Ringgit Malaysia ${iw} ${lab('(jumlah)')} atau ${ht} ${lab('(harta lain atau manfaat yang bernilai)')} yang tersebut."</p>
+      </div>`;
+    header=`<div style="text-align:center;margin-bottom:18pt">
+      <div>JADUAL KEDUA</div>
+      <div style="margin-top:8pt;font-style:italic">[Kaedah 16]</div>
+      <div style="margin-top:14pt">KAEDAH-KAEDAH HAKAM (NEGERI JOHOR) 2022</div>
+      <div style="margin-top:2pt;font-style:italic">SIGHAH TALAQ DAN KHUL'</div>
+    </div>`;
+    body=v1+v2+v3+v4+`<p style="margin-top:16pt">${Btk(d.tarikh)}</p>${meteraiHakim(true)}`;
+  } else {
+    body='<p>(format borang tidak ditemui)</p>';
+  }
+
+  const printContent = `
+  <div style="font-family:'Times New Roman',serif;color:#000;font-size:12pt;line-height:1.7;padding:18mm 22mm;max-width:210mm;box-sizing:border-box;text-align:justify">
+    <style>
+      .print-area p{margin:0 0 6pt 0}
+      .print-area u{text-decoration:underline;text-underline-offset:2px}
+    </style>
+    ${header}
+    ${body}
+  </div>`;
+  
+  const printWindow = document.createElement('div');
+  printWindow.id = 'print-container-' + Date.now();
+  printWindow.className = 'print-area';
+  printWindow.innerHTML = printContent;
+  document.body.appendChild(printWindow);
+  document.body.classList.add('printing');
+
+  const cleanup = () => {
+    document.body.classList.remove('printing');
+    if(printWindow.parentNode) printWindow.parentNode.removeChild(printWindow);
+    window.removeEventListener('afterprint', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
+
+  setTimeout(() => {
+    const originalTitle = document.title;
+    document.title = noBorang;
+    window.print();
+    document.title = originalTitle;
+    setTimeout(cleanup, 1000);
+  }, 100);
 }
 function cetakBorangUmum(subId){
   const s=STATE.subs.find(x=>x.id===subId);
